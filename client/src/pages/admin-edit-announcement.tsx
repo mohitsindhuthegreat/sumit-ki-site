@@ -89,10 +89,7 @@ export default function AdminEditAnnouncement() {
         ...data,
         expiryDate: data.expiryDate ? new Date(data.expiryDate) : undefined,
       };
-      const response = await apiRequest(`/api/admin/announcements/${announcementId}`, {
-        method: "PATCH",
-        body: JSON.stringify(submitData),
-      });
+      const response = await apiRequest("PATCH", `/api/admin/announcements/${announcementId}`, submitData);
       return response.json();
     },
     onSuccess: () => {

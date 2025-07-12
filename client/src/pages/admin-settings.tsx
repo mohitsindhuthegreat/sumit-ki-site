@@ -51,10 +51,7 @@ export default function AdminSettings() {
 
   const createSettingMutation = useMutation({
     mutationFn: async (data: SettingFormData) => {
-      const response = await apiRequest("/api/admin/site-settings", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      const response = await apiRequest("POST", "/api/admin/site-settings", data);
       return response.json();
     },
     onSuccess: () => {

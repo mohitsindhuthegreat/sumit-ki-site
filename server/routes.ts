@@ -279,10 +279,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Create announcement
   app.post("/api/admin/announcements", async (req, res) => {
     try {
+      console.log("Received announcement data:", req.body);
       const announcementData = insertAnnouncementSchema.parse(req.body);
+      console.log("Parsed announcement data:", announcementData);
       const announcement = await storage.createAnnouncement(announcementData);
       res.json({ success: true, data: announcement });
     } catch (error) {
+      console.error("Error creating announcement:", error);
       if (error instanceof z.ZodError) {
         res.status(400).json({ 
           success: false, 

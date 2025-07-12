@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +19,9 @@ import { z } from "zod";
 
 const formSchema = insertAnnouncementSchema.extend({
   expiryDate: z.string().optional(),
+}).omit({ 
+  createdAt: true, 
+  updatedAt: true 
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -27,6 +30,7 @@ export default function AdminCreateAnnouncement() {
   const [, setLocation] = useLocation();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const adminUser = localStorage.getItem("admin_user");
@@ -54,33 +58,51 @@ export default function AdminCreateAnnouncement() {
 
   const createAnnouncementMutation = useMutation({
     mutationFn: async (data: FormData) => {
+      // Clean up data - remove empty strings and convert to proper types
       const submitData = {
-        ...data,
-        expiryDate: data.expiryDate ? new Date(data.expiryDate) : undefined,
+        title: data.title.trim(),
+        titleHindi: data.titleHindi?.trim() || null,
+        content: data.content.trim(),
+        contentHindi: data.contentHindi?.trim() || null,
+        category: data.category,
+        priority: data.priority,
+        isActive: data.isActive,
+        applyLink: data.applyLink?.trim() || null,
+        expiryDate: data.expiryDate ? new Date(data.expiryDate) : null,
       };
-      const response = await apiRequest("/api/admin/announcements", {
-        method: "POST",
-        body: JSON.stringify(submitData),
-      });
+      
+      console.log("Submitting data:", submitData);
+      
+      const response = await apiRequest("POST", "/api/admin/announcements", submitData);
       return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/announcements"] });
       toast({
         title: "Success",
         description: "Announcement created successfully!",
       });
       setLocation("/admin/dashboard");
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error("Mutation error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        cause: error.cause,
+        stack: error.stack,
+        name: error.name
+      });
       toast({
         title: "Error",
-        description: "Failed to create announcement. Please try again.",
+        description: error.message || "Failed to create announcement. Please try again.",
         variant: "destructive",
       });
     },
   });
 
   const onSubmit = (data: FormData) => {
+    console.log("Form data:", data);
+    console.log("Form errors:", form.formState.errors);
     createAnnouncementMutation.mutate(data);
   };
 
@@ -335,6 +357,16 @@ export default function AdminCreateAnnouncement() {
                     )}
                   </Button>
                 </div>
+                
+                {/* Debug Info */}
+                {createAnnouncementMutation.error && (
+                  <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <h4 className="font-medium text-red-800">Error Details:</h4>
+                    <p className="text-sm text-red-600 mt-1">
+                      {createAnnouncementMutation.error.message || "Unknown error occurred"}
+                    </p>
+                  </div>
+                )}
               </form>
             </Form>
           </CardContent>
