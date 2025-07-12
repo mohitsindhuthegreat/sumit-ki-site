@@ -65,6 +65,9 @@ export class MemStorage implements IStorage {
     
     // Create default admin user
     this.createDefaultAdmin();
+    
+    // Initialize default contact settings
+    this.initializeDefaultSettings();
   }
 
   private createDefaultAdmin() {
@@ -152,6 +155,86 @@ export class MemStorage implements IStorage {
         updatedAt: new Date(),
       };
       this.announcements.set(id, announcementData);
+    });
+  }
+
+  private initializeDefaultSettings() {
+    const defaultSettings = [
+      {
+        key: "contact_phone",
+        value: "+91 98765 43210",
+        description: "Primary contact phone number"
+      },
+      {
+        key: "contact_phone_alt",
+        value: "+91 87654 32109",
+        description: "Alternative contact phone number"
+      },
+      {
+        key: "contact_whatsapp",
+        value: "+91 98765 43210",
+        description: "WhatsApp contact number"
+      },
+      {
+        key: "contact_email",
+        value: "info@mahechcafe.com",
+        description: "Primary contact email"
+      },
+      {
+        key: "contact_email_support",
+        value: "support@mahechcafe.com",
+        description: "Support email address"
+      },
+      {
+        key: "contact_address",
+        value: "Shop No. 123, Main Market\nNear City Center Mall\nNew Delhi - 110001",
+        description: "Business address"
+      },
+      {
+        key: "contact_address_hindi",
+        value: "दुकान नंबर 123, मुख्य बाजार\nसिटी सेंटर मॉल के पास\nनई दिल्ली - 110001",
+        description: "Business address in Hindi"
+      },
+      {
+        key: "business_hours",
+        value: "Monday - Sunday: 8:00 AM - 11:00 PM",
+        description: "Business operating hours"
+      },
+      {
+        key: "business_hours_hindi",
+        value: "सोमवार - रविवार: सुबह 8:00 - रात 11:00",
+        description: "Business operating hours in Hindi"
+      },
+      {
+        key: "site_title",
+        value: "Mahech Internet Cafe",
+        description: "Website title"
+      },
+      {
+        key: "site_title_hindi",
+        value: "महेच इंटरनेट कैफे",
+        description: "Website title in Hindi"
+      },
+      {
+        key: "site_description",
+        value: "Complete digital solution hub for government services, banking, and more",
+        description: "Website description"
+      },
+      {
+        key: "site_description_hindi",
+        value: "सरकारी सेवाओं, बैंकिंग और अधिक के लिए संपूर्ण डिजिटल समाधान केंद्र",
+        description: "Website description in Hindi"
+      }
+    ];
+
+    defaultSettings.forEach((setting) => {
+      const id = this.currentSettingId++;
+      const settingData: SiteSetting = {
+        ...setting,
+        id,
+        updatedAt: new Date()
+      };
+      this.siteSettings.set(setting.key, settingData);
     });
   }
 

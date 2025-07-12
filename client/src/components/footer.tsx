@@ -1,5 +1,6 @@
 import { Wifi } from "lucide-react";
 import { Link } from "wouter";
+import { useContactInfo } from "@/hooks/use-contact-info";
 
 const quickLinks = [
   { name: "Home", href: "/" },
@@ -22,6 +23,7 @@ const services = [
 ];
 
 export default function Footer() {
+  const contactInfo = useContactInfo();
 
   return (
     <footer className="bg-gray-900 text-white py-12">
@@ -92,17 +94,20 @@ export default function Footer() {
             <div className="space-y-3 text-gray-400">
               <div className="flex items-center space-x-2">
                 <i className="fas fa-phone text-brand-cyan"></i>
-                <span>+91 98765 43210</span>
+                <span>{contactInfo.phone || '+91 98765 43210'}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <i className="fas fa-envelope text-brand-cyan"></i>
-                <span>info@mahechcafe.com</span>
+                <span>{contactInfo.email || 'info@mahechcafe.com'}</span>
               </div>
               <div className="flex items-start space-x-2">
                 <i className="fas fa-map-marker-alt text-brand-cyan mt-1"></i>
                 <span>
-                  Shop No. 123, Main Market<br />
-                  Your City - 123456
+                  {contactInfo.address ? contactInfo.address.split('\n').map((line, i) => (
+                    <span key={i}>{line}<br /></span>
+                  )) : 'Shop No. 123, Main Market\nYour City - 123456'.split('\n').map((line, i) => (
+                    <span key={i}>{line}<br /></span>
+                  ))}
                 </span>
               </div>
             </div>

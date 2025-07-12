@@ -75,6 +75,81 @@ export default function AdminSettings() {
     createSettingMutation.mutate(data);
   };
 
+  // Contact Edit Button Component
+  const ContactEditButton = ({ setting }: { setting: any }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editValue, setEditValue] = useState(setting.value);
+
+    const updateSettingMutation = useMutation({
+      mutationFn: async (data: { key: string; value: string }) => {
+        const response = await apiRequest("PUT", `/api/admin/site-settings/${data.key}`, { value: data.value });
+        return response.json();
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/site-settings"] });
+        setIsEditing(false);
+        toast({
+          title: "Success",
+          description: "Contact information updated successfully!",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: "Failed to update contact information. Please try again.",
+          variant: "destructive",
+        });
+      },
+    });
+
+    const handleSave = () => {
+      updateSettingMutation.mutate({ key: setting.key, value: editValue });
+    };
+
+    const handleCancel = () => {
+      setEditValue(setting.value);
+      setIsEditing(false);
+    };
+
+    if (isEditing) {
+      return (
+        <div className="flex items-center gap-2 w-full mt-2">
+          {setting.key.includes('address') ? (
+            <Textarea
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              className="flex-1"
+              rows={3}
+            />
+          ) : (
+            <Input
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              className="flex-1"
+            />
+          )}
+          <Button size="sm" onClick={handleSave} disabled={updateSettingMutation.isPending}>
+            <Save className="h-4 w-4" />
+          </Button>
+          <Button size="sm" variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => setIsEditing(true)}
+        className="ml-2"
+      >
+        <Edit className="h-4 w-4" />
+      </Button>
+    );
+  };
+
   if (!currentUser) {
     return <div>Loading...</div>;
   }
@@ -186,27 +261,38 @@ export default function AdminSettings() {
                   Contact Information
                 </CardTitle>
                 <CardDescription>
-                  Manage business contact details
+                  Manage business contact details that appear throughout the website
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <h3 className="font-medium">Current Contact Details</h3>
-                    <div className="space-y-2 text-sm">
-                      <p><strong>Phone:</strong> +91 98765 43210</p>
-                      <p><strong>WhatsApp:</strong> +91 98765 43210</p>
-                      <p><strong>Email:</strong> info@mahechcafe.com</p>
-                      <p><strong>Address:</strong> Main Market, Sector 15, Hisar, Haryana</p>
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-lg">Current Contact Details</h3>
+                    <div className="space-y-3">
+                      {siteSettings.filter(setting => setting.key.startsWith('contact_')).map((setting) => (
+                        <div key={setting.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex-1">
+                            <p className="font-medium capitalize">{setting.key.replace('contact_', '').replace('_', ' ')}</p>
+                            <p className="text-sm text-gray-600">{setting.value}</p>
+                          </div>
+                          <ContactEditButton setting={setting} />
+                        </div>
+                      ))}
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
-                    <h3 className="font-medium">Business Hours</h3>
-                    <div className="space-y-2 text-sm">
-                      <p><strong>Monday - Saturday:</strong> 9:00 AM - 9:00 PM</p>
-                      <p><strong>Sunday:</strong> 10:00 AM - 6:00 PM</p>
-                      <p><strong>Holidays:</strong> 10:00 AM - 4:00 PM</p>
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-lg">Business Information</h3>
+                    <div className="space-y-3">
+                      {siteSettings.filter(setting => setting.key.startsWith('business_') || setting.key.startsWith('site_')).map((setting) => (
+                        <div key={setting.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex-1">
+                            <p className="font-medium capitalize">{setting.key.replace('business_', '').replace('site_', '').replace('_', ' ')}</p>
+                            <p className="text-sm text-gray-600">{setting.value}</p>
+                          </div>
+                          <ContactEditButton setting={setting} />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

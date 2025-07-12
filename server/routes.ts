@@ -279,7 +279,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Create announcement
   app.post("/api/admin/announcements", async (req, res) => {
     try {
-      console.log("Received announcement data:", req.body);
       const announcementData = insertAnnouncementSchema.parse(req.body);
       console.log("Parsed announcement data:", announcementData);
       const announcement = await storage.createAnnouncement(announcementData);
@@ -319,6 +318,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       const updateData = req.body;
+      
+      // Convert expiryDate string to Date object if it exists
+      if (updateData.expiryDate && typeof updateData.expiryDate === 'string') {
+        updateData.expiryDate = new Date(updateData.expiryDate);
+      }
       
       const updated = await storage.updateAnnouncement(id, updateData);
       if (!updated) {
@@ -403,6 +407,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Failed to save setting" 
         });
       }
+    }
+  });
+
+  app.put("/api/admin/site-settings/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      const { value } = req.body;
+      
+      const settingData = { key, value };
+      const setting = await storage.setSiteSetting(settingData);
+      res.json({ success: true, data: setting });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to update setting" 
+      });
     }
   });
 

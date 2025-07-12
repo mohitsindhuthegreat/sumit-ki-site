@@ -90,6 +90,8 @@ export const insertAnnouncementSchema = createInsertSchema(announcements).pick({
   isActive: true,
   applyLink: true,
   expiryDate: true,
+}).extend({
+  expiryDate: z.coerce.date().optional().nullable(),
 });
 
 export const insertSiteSettingSchema = createInsertSchema(siteSettings).pick({

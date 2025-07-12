@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useContactInfo } from "@/hooks/use-contact-info";
 
 interface ContactFormData {
   name: string;
@@ -18,6 +19,7 @@ interface ContactFormData {
 
 export default function ContactSection() {
   const { toast } = useToast();
+  const contactInfo = useContactInfo();
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -176,9 +178,11 @@ export default function ContactSection() {
                   <div>
                     <h4 className="font-semibold text-gray-900">Address</h4>
                     <p className="text-gray-600">
-                      Shop No. 123, Main Market<br />
-                      Near City Center Mall<br />
-                      New Delhi - 110001
+                      {contactInfo.address ? contactInfo.address.split('\n').map((line, i) => (
+                        <span key={i}>{line}<br /></span>
+                      )) : 'Shop No. 123, Main Market\nNear City Center Mall\nNew Delhi - 110001'.split('\n').map((line, i) => (
+                        <span key={i}>{line}<br /></span>
+                      ))}
                     </p>
                   </div>
                 </div>
@@ -189,8 +193,8 @@ export default function ContactSection() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Phone</h4>
-                    <p className="text-gray-600">+91 98765 43210</p>
-                    <p className="text-gray-600">+91 87654 32109</p>
+                    <p className="text-gray-600">{contactInfo.phone || '+91 98765 43210'}</p>
+                    {contactInfo.phoneAlt && <p className="text-gray-600">{contactInfo.phoneAlt}</p>}
                   </div>
                 </div>
 
@@ -200,8 +204,8 @@ export default function ContactSection() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Email</h4>
-                    <p className="text-gray-600">info@mahechcafe.com</p>
-                    <p className="text-gray-600">support@mahechcafe.com</p>
+                    <p className="text-gray-600">{contactInfo.email || 'info@mahechcafe.com'}</p>
+                    {contactInfo.emailSupport && <p className="text-gray-600">{contactInfo.emailSupport}</p>}
                   </div>
                 </div>
 
@@ -211,8 +215,7 @@ export default function ContactSection() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Business Hours</h4>
-                    <p className="text-gray-600">Monday - Sunday</p>
-                    <p className="text-gray-600 font-semibold">8:00 AM - 11:00 PM</p>
+                    <p className="text-gray-600">{contactInfo.businessHours || 'Monday - Sunday: 8:00 AM - 11:00 PM'}</p>
                     <p className="text-sm text-green-600">Open 7 days a week</p>
                   </div>
                 </div>
