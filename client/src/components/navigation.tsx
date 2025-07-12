@@ -26,7 +26,7 @@ export default function Navigation() {
           </div>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden lg:flex space-x-6">
             <button 
               onClick={() => scrollToSection("home")} 
               className="text-gray-700 hover:text-brand-blue transition-colors"
@@ -46,16 +46,28 @@ export default function Navigation() {
               About
             </button>
             <button 
-              onClick={() => scrollToSection("gallery")} 
+              onClick={() => scrollToSection("government-services")} 
               className="text-gray-700 hover:text-brand-blue transition-colors"
             >
-              Gallery
+              Government ID
             </button>
             <button 
-              onClick={() => scrollToSection("pricing")} 
+              onClick={() => scrollToSection("banking-services")} 
               className="text-gray-700 hover:text-brand-blue transition-colors"
             >
-              Pricing
+              Banking
+            </button>
+            <button 
+              onClick={() => scrollToSection("printing-services")} 
+              className="text-gray-700 hover:text-brand-blue transition-colors"
+            >
+              Printing
+            </button>
+            <button 
+              onClick={() => scrollToSection("travel-services")} 
+              className="text-gray-700 hover:text-brand-blue transition-colors"
+            >
+              Travel
             </button>
             <button 
               onClick={() => scrollToSection("contact")} 
@@ -66,7 +78,7 @@ export default function Navigation() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Button
               variant="ghost"
               size="icon"
@@ -80,7 +92,7 @@ export default function Navigation() {
 
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
               <button 
                 onClick={() => scrollToSection("home")} 
@@ -101,16 +113,34 @@ export default function Navigation() {
                 About
               </button>
               <button 
-                onClick={() => scrollToSection("gallery")} 
+                onClick={() => scrollToSection("government-services")} 
                 className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
               >
-                Gallery
+                Government ID
               </button>
               <button 
-                onClick={() => scrollToSection("pricing")} 
+                onClick={() => scrollToSection("banking-services")} 
                 className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
               >
-                Pricing
+                Banking & Bills
+              </button>
+              <button 
+                onClick={() => scrollToSection("printing-services")} 
+                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
+              >
+                Printing
+              </button>
+              <button 
+                onClick={() => scrollToSection("online-forms-services")} 
+                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
+              >
+                Online Forms
+              </button>
+              <button 
+                onClick={() => scrollToSection("travel-services")} 
+                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
+              >
+                Travel
               </button>
               <button 
                 onClick={() => scrollToSection("contact")} 

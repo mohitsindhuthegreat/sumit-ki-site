@@ -33,12 +33,12 @@ export default function AboutSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">About Mahech Internet Cafe</h2>
-            <p className="text-lg text-gray-600 mb-6">
-              Established as your trusted digital partner, Mahech Internet Cafe has been serving the community with reliable technology services and high-speed internet access. We are committed to bridging the digital divide and providing affordable technology solutions.
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">About Mahech Internet Cafe</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+              Established as your trusted digital partner, Mahech Internet Cafe has been serving the community with comprehensive online solutions. From government ID services to travel bookings, we provide complete digital assistance under one roof.
             </p>
-            <p className="text-lg text-gray-600 mb-8">
-              <span className="text-brand-blue font-semibold">महेच इंटरनेट कैफे</span> आपके विश्वसनीय डिजिटल पार्टनर के रूप में समुदाय की सेवा में तत्पर है। हम सभी को किफायती तकनीकी समाधान प्रदान करने के लिए प्रतिबद्ध हैं।
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+              <span className="text-brand-blue font-semibold">महेच इंटरनेट कैफे</span> आपके विश्वसनीय डिजिटल पार्टनर के रूप में समुदाय की सेवा में तत्पर है। सरकारी आईडी सेवाओं से लेकर यात्रा बुकिंग तक, हम एक छत के नीचे पूर्ण डिजिटल सहायता प्रदान करते हैं।
             </p>
             
             <div className="grid sm:grid-cols-2 gap-6">

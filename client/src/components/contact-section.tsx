@@ -164,7 +164,7 @@ export default function ContactSection() {
                     <p className="text-gray-600">
                       Shop No. 123, Main Market<br />
                       Near City Center Mall<br />
-                      Your City - 123456
+                      New Delhi - 110001
                     </p>
                   </div>
                 </div>
@@ -205,14 +205,19 @@ export default function ContactSection() {
               </div>
             </div>
 
-            {/* Map Placeholder */}
-            <Card className="bg-gray-200 h-64">
-              <CardContent className="h-full flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="text-4xl text-gray-400 mb-2 mx-auto" size={48} />
-                  <p className="text-gray-600">Interactive Map</p>
-                  <p className="text-sm text-gray-500">Google Maps integration</p>
-                </div>
+            {/* Embedded Google Map */}
+            <Card className="overflow-hidden h-64">
+              <CardContent className="p-0 h-full">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.904943074297!2d77.21!3d28.61!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDM2JzM2LjAiTiA3N8KwMTInMzYuMCJF!5e0!3m2!1sen!2sin!4v1640000000000!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Mahech Internet Cafe Location"
+                ></iframe>
               </CardContent>
             </Card>
           </div>

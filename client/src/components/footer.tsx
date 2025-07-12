@@ -4,18 +4,21 @@ const quickLinks = [
   { name: "Home", href: "#home" },
   { name: "Services", href: "#services" },
   { name: "About Us", href: "#about" },
-  { name: "Gallery", href: "#gallery" },
-  { name: "Pricing", href: "#pricing" },
+  { name: "Government ID", href: "#government-services" },
+  { name: "Banking & Bills", href: "#banking-services" },
+  { name: "Printing", href: "#printing-services" },
+  { name: "Online Forms", href: "#online-forms-services" },
+  { name: "Travel Booking", href: "#travel-services" },
   { name: "Contact", href: "#contact" }
 ];
 
 const services = [
-  "High-Speed Internet",
-  "Printing & Scanning",
-  "Computer Repair",
-  "Gaming Zone",
-  "Digital Documentation",
-  "Online Services"
+  "Government ID Services",
+  "Banking & Bill Payments", 
+  "Printing & Stationery",
+  "Online Forms & Exams",
+  "Travel & Booking",
+  "Expert Digital Support"
 ];
 
 export default function Footer() {
@@ -115,11 +118,35 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400">
-            © 2024 Mahech Internet Cafe. All rights reserved. | 
-            <span className="text-brand-cyan"> महेच इंटरनेट कैफे</span> - आपका डिजिटल साथी
-          </p>
+        <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="text-center mb-4">
+            <div className="flex justify-center space-x-6 mb-4">
+              <button 
+                onClick={() => scrollToSection("privacy-policy")}
+                className="text-gray-400 hover:text-brand-cyan transition-colors text-sm"
+              >
+                Privacy Policy
+              </button>
+              <button 
+                onClick={() => scrollToSection("terms-conditions")}
+                className="text-gray-400 hover:text-brand-cyan transition-colors text-sm"
+              >
+                Terms & Conditions
+              </button>
+              <a 
+                href="mailto:info@mahechcafe.com" 
+                className="text-gray-400 hover:text-brand-cyan transition-colors text-sm"
+              >
+                Support
+              </a>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-gray-400">
+              © 2024 Mahech Internet Cafe. All rights reserved. | 
+              <span className="text-brand-cyan"> महेच इंटरनेट कैफे</span> - आपका डिजिटल साथी
+            </p>
+          </div>
         </div>
       </div>
     </footer>

@@ -2,11 +2,13 @@
 
 ## Overview
 
-This is a modern, full-stack web application for Mahech Internet Cafe, built as a business landing page with contact form functionality. The application showcases the cafe's services, pricing, and facility information while providing a way for customers to contact the business.
+This is a comprehensive, full-stack web application for Mahech Internet Cafe, built as a complete online solution hub. The application provides extensive digital services including government ID assistance, banking & bill payments, printing services, online form filling, travel booking, and more. It serves as a one-stop digital solution platform for the community.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Bilingual support: English and Hindi throughout the interface.
+Focus on comprehensive service coverage with professional presentation.
 
 ## System Architecture
 
@@ -22,11 +24,12 @@ The application follows a monorepo architecture with a clear separation between 
 
 ### Frontend Architecture
 - **Framework**: React 18 with TypeScript
-- **Routing**: Wouter for client-side routing
+- **Routing**: Wouter for client-side routing (single-page application)
 - **State Management**: TanStack Query for server state management
 - **UI Components**: shadcn/ui component library built on Radix UI primitives
-- **Styling**: Tailwind CSS with custom CSS variables for theming
+- **Styling**: Tailwind CSS with custom CSS variables for theming and dark mode support
 - **Forms**: React Hook Form with Zod validation
+- **Internationalization**: Bilingual content (English/Hindi) throughout the application
 
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript
@@ -42,9 +45,10 @@ The application follows a monorepo architecture with a clear separation between 
 - **Fallback Storage**: In-memory storage implementation for development
 
 ### Database Schema
-The application uses two main tables:
+The application uses three main tables:
 - **users**: Basic user authentication (id, username, password)
-- **contact_messages**: Customer contact form submissions (id, name, email, phone, message, created_at)
+- **contact_messages**: Customer contact form submissions (id, name, email, phone, message, service_type, created_at)
+- **service_requests**: Service booking requests (id, name, phone, email, service_category, service_type, details, status, created_at)
 
 ## Data Flow
 
@@ -55,13 +59,21 @@ The application uses two main tables:
    - Backend validates and stores message in database
    - Success/error response sent back to frontend
 
-2. **Contact Messages Retrieval**:
-   - Admin can fetch all contact messages via `/api/contact-messages`
-   - Backend queries database and returns JSON array
+2. **Service Request Submission**:
+   - User requests specific services through service forms
+   - Service request data validated and stored via `/api/service-request`
+   - Includes service category, type, and customer details
+   - Status tracking for service completion
 
-3. **Static Content**:
-   - All business information (services, pricing, gallery) is statically defined in React components
-   - No database queries needed for main content
+3. **Admin Data Retrieval**:
+   - Contact messages via `/api/contact-messages`
+   - Service requests via `/api/service-requests`
+   - Backend queries database and returns JSON arrays
+
+4. **Service Content**:
+   - Comprehensive service information statically defined in React components
+   - Government services, banking, printing, travel, and online forms
+   - Real pricing, packages, and detailed service descriptions
 
 ## External Dependencies
 
@@ -109,4 +121,18 @@ The application uses two main tables:
 5. **Vite for Frontend**: Fast development experience with excellent React integration
 6. **Express for Backend**: Simple, well-established backend framework suitable for the API requirements
 
-The architecture prioritizes developer experience, type safety, and maintainability while keeping the complexity appropriate for a business landing page with contact functionality.
+## Recent Changes (January 2025)
+
+✓ Transformed from simple landing page to comprehensive online solution hub
+✓ Added Government ID services section (Aadhaar, PAN, Voter ID, Ration Card, Ayushman Bharat)
+✓ Implemented Banking & Bill Payment services with AEPS integration
+✓ Created comprehensive Printing & Stationery services section
+✓ Added Online Forms & Examination services (form filling, admit cards, results)
+✓ Integrated Travel & Booking services (train, bus, flight, hotel booking)
+✓ Enhanced database schema with service request tracking
+✓ Added Privacy Policy and Terms & Conditions sections
+✓ Implemented bilingual content (English/Hindi) throughout
+✓ Created responsive design with improved navigation
+✓ Added Google Maps integration for location
+
+The architecture prioritizes comprehensive service coverage, user experience, and maintainability while serving as a complete digital solution platform for internet cafe customers.

@@ -1,22 +1,32 @@
 import Navigation from "@/components/navigation";
 import HeroSection from "@/components/hero-section";
-import ServicesSection from "@/components/services-section";
+import ServicesOverview from "@/components/services-overview";
 import AboutSection from "@/components/about-section";
-import GallerySection from "@/components/gallery-section";
-import PricingSection from "@/components/pricing-section";
+import GovernmentServices from "@/components/government-services";
+import BankingServices from "@/components/banking-services";
+import PrintingServices from "@/components/printing-services";
+import OnlineFormsServices from "@/components/online-forms-services";
+import TravelServices from "@/components/travel-services";
 import ContactSection from "@/components/contact-section";
+import PrivacyPolicy from "@/components/privacy-policy";
+import TermsConditions from "@/components/terms-conditions";
 import Footer from "@/components/footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <Navigation />
       <HeroSection />
-      <ServicesSection />
+      <ServicesOverview />
       <AboutSection />
-      <GallerySection />
-      <PricingSection />
+      <GovernmentServices />
+      <BankingServices />
+      <PrintingServices />
+      <OnlineFormsServices />
+      <TravelServices />
       <ContactSection />
+      <PrivacyPolicy />
+      <TermsConditions />
       <Footer />
     </div>
   );

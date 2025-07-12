@@ -21,12 +21,12 @@ export default function HeroSection() {
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-5xl md:text-6xl font-bold mb-6">
-          Your Complete <span className="text-brand-cyan">Digital Solution</span> Hub
+          Your Complete <span className="text-brand-cyan">Online Solution</span> Hub
         </h1>
         <p className="text-xl md:text-2xl mb-8 text-gray-200">
-          High-speed internet, printing services, and computer solutions at affordable prices
+          Government services, banking, printing, travel booking & all digital solutions
           <br />
-          <span className="text-lg">हाई-स्पीड इंटरनेट, प्रिंटिंग सेवाएं, और कंप्यूटर समाधान</span>
+          <span className="text-lg">सरकारी सेवाएं, बैंकिंग, प्रिंटिंग, यात्रा बुकिंग और सभी डिजिटल समाधान</span>
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button 
