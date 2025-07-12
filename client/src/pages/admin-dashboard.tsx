@@ -85,9 +85,17 @@ export default function AdminDashboard() {
   // Delete announcement mutation
   const deleteAnnouncementMutation = useMutation({
     mutationFn: async (id: number) => {
+      console.log("Deleting announcement with ID:", id);
       const response = await apiRequest(`/api/admin/announcements/${id}`, {
         method: "DELETE",
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Delete error:", errorData);
+        throw new Error(errorData.message || "Failed to delete announcement");
+      }
+      
       return response.json();
     },
     onSuccess: () => {
@@ -95,6 +103,14 @@ export default function AdminDashboard() {
       toast({
         title: "Deleted",
         description: "Announcement deleted successfully!",
+      });
+    },
+    onError: (error) => {
+      console.error("Delete mutation error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete announcement",
+        variant: "destructive",
       });
     },
   });
