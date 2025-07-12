@@ -111,10 +111,11 @@ export default function ServicesOverview() {
                     </li>
                   ))}
                 </ul>
-                <Link href={service.route}>
-                  <a className={`w-full inline-block ${service.color} hover:opacity-90 text-white rounded-md px-4 py-2 text-center font-medium transition-colors`}>
-                    Learn More
-                  </a>
+                <Link 
+                  href={service.route} 
+                  className={`w-full inline-block ${service.color} hover:opacity-90 text-white rounded-md px-4 py-2 text-center font-medium transition-colors`}
+                >
+                  Learn More
                 </Link>
               </CardContent>
             </Card>

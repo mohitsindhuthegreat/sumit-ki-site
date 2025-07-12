@@ -13,6 +13,10 @@ import TravelServices from "@/pages/travel-services";
 import Contact from "@/pages/contact";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsConditions from "@/pages/terms-conditions";
+import SarkariUpdates from "@/pages/sarkari-updates";
+import AdminLogin from "@/pages/admin-login";
+import AdminDashboard from "@/pages/admin-dashboard";
+import AdminCreateAnnouncement from "@/pages/admin-create-announcement";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -28,6 +32,10 @@ function Router() {
       <Route path="/contact" component={Contact} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-conditions" component={TermsConditions} />
+      <Route path="/sarkari-updates" component={SarkariUpdates} />
+      <Route path="/admin/login" component={AdminLogin} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin/create-announcement" component={AdminCreateAnnouncement} />
       <Route component={NotFound} />
     </Switch>
   );

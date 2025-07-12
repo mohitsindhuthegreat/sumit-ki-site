@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Wifi, Menu, X } from "lucide-react";
+import { Wifi, Menu, X, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
 
@@ -46,8 +46,21 @@ export default function Navigation() {
             <Link href="/travel-services" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/travel-services' ? 'text-brand-blue font-semibold' : ''}`}>
               Travel
             </Link>
+            <Link href="/sarkari-updates" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/sarkari-updates' ? 'text-brand-blue font-semibold' : ''}`}>
+              Sarkari Updates
+            </Link>
             <Link href="/contact" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/contact' ? 'text-brand-blue font-semibold' : ''}`}>
               Contact
+            </Link>
+          </div>
+          
+          {/* Admin Access Button */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <Link href="/admin/login">
+              <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                <Settings className="h-4 w-4" />
+                <span>Admin</span>
+              </Button>
             </Link>
           </div>
 
@@ -88,6 +101,9 @@ export default function Navigation() {
               </Link>
               <Link href="/travel-services" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/travel-services' ? 'text-brand-blue font-semibold' : ''}`}>
                 Travel
+              </Link>
+              <Link href="/sarkari-updates" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/sarkari-updates' ? 'text-brand-blue font-semibold' : ''}`}>
+                Sarkari Updates
               </Link>
               <Link href="/contact" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/contact' ? 'text-brand-blue font-semibold' : ''}`}>
                 Contact

@@ -1,4 +1,20 @@
-import { users, contactMessages, serviceRequests, type User, type InsertUser, type ContactMessage, type InsertContactMessage, type ServiceRequest, type InsertServiceRequest } from "@shared/schema";
+import { 
+  users, 
+  contactMessages, 
+  serviceRequests, 
+  announcements, 
+  siteSettings,
+  type User, 
+  type InsertUser, 
+  type ContactMessage, 
+  type InsertContactMessage, 
+  type ServiceRequest, 
+  type InsertServiceRequest,
+  type Announcement,
+  type InsertAnnouncement,
+  type SiteSetting,
+  type InsertSiteSetting 
+} from "@shared/schema";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -8,23 +24,121 @@ export interface IStorage {
   getContactMessages(): Promise<ContactMessage[]>;
   createServiceRequest(request: InsertServiceRequest): Promise<ServiceRequest>;
   getServiceRequests(): Promise<ServiceRequest[]>;
+  updateServiceRequestStatus(id: number, status: string): Promise<ServiceRequest | undefined>;
+  
+  // Admin functionality
+  createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
+  getAnnouncements(): Promise<Announcement[]>;
+  getActiveAnnouncements(): Promise<Announcement[]>;
+  updateAnnouncement(id: number, announcement: Partial<InsertAnnouncement>): Promise<Announcement | undefined>;
+  deleteAnnouncement(id: number): Promise<boolean>;
+  
+  // Site settings
+  getSiteSetting(key: string): Promise<SiteSetting | undefined>;
+  setSiteSetting(setting: InsertSiteSetting): Promise<SiteSetting>;
+  getAllSiteSettings(): Promise<SiteSetting[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private contactMessages: Map<number, ContactMessage>;
   private serviceRequests: Map<number, ServiceRequest>;
+  private announcements: Map<number, Announcement>;
+  private siteSettings: Map<string, SiteSetting>;
   private currentUserId: number;
   private currentMessageId: number;
   private currentRequestId: number;
+  private currentAnnouncementId: number;
+  private currentSettingId: number;
 
   constructor() {
     this.users = new Map();
     this.contactMessages = new Map();
     this.serviceRequests = new Map();
+    this.announcements = new Map();
+    this.siteSettings = new Map();
     this.currentUserId = 1;
     this.currentMessageId = 1;
     this.currentRequestId = 1;
+    this.currentAnnouncementId = 1;
+    this.currentSettingId = 1;
+    
+    // Create default admin user
+    this.createDefaultAdmin();
+  }
+
+  private async createDefaultAdmin() {
+    const adminUser: User = {
+      id: this.currentUserId++,
+      username: "sumit",
+      password: "1",
+      role: "admin",
+      isActive: true,
+      createdAt: new Date(),
+    };
+    this.users.set(adminUser.id, adminUser);
+    
+    // Add sample announcements
+    this.createSampleAnnouncements();
+  }
+
+  private createSampleAnnouncements() {
+    const sampleAnnouncements = [
+      {
+        title: "Latest Government Job Notifications 2025",
+        titleHindi: "नवीनतम सरकारी नौकरी अधिसूचनाएं 2025",
+        content: "New government job openings in Railway, Banking, SSC, and UPSC sectors. Apply now for various positions including clerk, officer, and technical roles with competitive packages.",
+        contentHindi: "रेलवे, बैंकिंग, SSC और UPSC क्षेत्रों में नई सरकारी नौकरी के अवसर। प्रतिस्पर्धी पैकेज के साथ क्लर्क, अधिकारी और तकनीकी भूमिकाओं के लिए आवेदन करें।",
+        category: "vacancy",
+        priority: "high",
+        isActive: true,
+        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      },
+      {
+        title: "Online Form Submission Service - New Features Added",
+        titleHindi: "ऑनलाइन फॉर्म सबमिशन सेवा - नई सुविधाएं जोड़ी गई",
+        content: "We've added new features to our online form submission service including auto-fill, document upload, and real-time status tracking. Visit our center for assistance.",
+        contentHindi: "हमने अपनी ऑनलाइन फॉर्म सबमिशन सेवा में नई सुविधाएं जोड़ी हैं जिसमें ऑटो-फिल, दस्तावेज अपलोड और रियल-टाइम स्टेटस ट्रैकिंग शामिल है।",
+        category: "form",
+        priority: "normal",
+        isActive: true,
+        expiryDate: null,
+      },
+      {
+        title: "Income Tax Return Filing - Last Date Extended",
+        titleHindi: "आयकर रिटर्न फाइलिंग - अंतिम तिथि बढ़ाई गई",
+        content: "The last date for filing Income Tax Returns has been extended to March 31st, 2025. Get professional help at our center with expert guidance and quick processing.",
+        contentHindi: "आयकर रिटर्न फाइलिंग की अंतिम तिथि 31 मार्च, 2025 तक बढ़ा दी गई है। विशेषज्ञ मार्गदर्शन और त्वरित प्रसंस्करण के साथ हमारे केंद्र पर पेशेवर सहायता प्राप्त करें।",
+        category: "notice",
+        priority: "high",
+        isActive: true,
+        expiryDate: new Date('2025-03-31'),
+      },
+      {
+        title: "Digital Banking Services Now Available",
+        titleHindi: "डिजिटल बैंकिंग सेवाएं अब उपलब्ध",
+        content: "We now offer comprehensive digital banking services including UPI payments, bank transfers, account opening assistance, and loan application support.",
+        contentHindi: "हम अब व्यापक डिजिटल बैंकिंग सेवाएं प्रदान करते हैं जिसमें UPI भुगतान, बैंक ट्रांसफर, खाता खोलने की सहायता और लोन आवेदन समर्थन शामिल है।",
+        category: "update",
+        priority: "normal",
+        isActive: true,
+        expiryDate: null,
+      },
+      {
+        title: "Aadhaar Card Update Services - Special Discount",
+        titleHindi: "आधार कार्ड अपडेट सेवाएं - विशेष छूट",
+        content: "Get your Aadhaar card updated with latest information. Special discount of 20% on all Aadhaar services this month including name change, address update, and mobile number linking.",
+        contentHindi: "अपने आधार कार्ड को नवीनतम जानकारी के साथ अपडेट करवाएं। इस महीने सभी आधार सेवाओं पर 20% की विशेष छूट जिसमें नाम परिवर्तन, पता अपडेट और मोबाइल नंबर लिंकिंग शामिल है।",
+        category: "news",
+        priority: "normal",
+        isActive: true,
+        expiryDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
+      }
+    ];
+
+    sampleAnnouncements.forEach(async (announcement) => {
+      await this.createAnnouncement(announcement);
+    });
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -39,7 +153,13 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      role: insertUser.role || "user",
+      isActive: true,
+      createdAt: new Date() 
+    };
     this.users.set(id, user);
     return user;
   }
@@ -80,6 +200,89 @@ export class MemStorage implements IStorage {
     return Array.from(this.serviceRequests.values()).sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
     );
+  }
+
+  async updateServiceRequestStatus(id: number, status: string): Promise<ServiceRequest | undefined> {
+    const request = this.serviceRequests.get(id);
+    if (request) {
+      request.status = status;
+      this.serviceRequests.set(id, request);
+      return request;
+    }
+    return undefined;
+  }
+
+  // Admin functionality
+  async createAnnouncement(insertAnnouncement: InsertAnnouncement): Promise<Announcement> {
+    const id = this.currentAnnouncementId++;
+    const announcement: Announcement = {
+      ...insertAnnouncement,
+      id,
+      titleHindi: insertAnnouncement.titleHindi || null,
+      contentHindi: insertAnnouncement.contentHindi || null,
+      priority: insertAnnouncement.priority || "normal",
+      isActive: insertAnnouncement.isActive !== undefined ? insertAnnouncement.isActive : true,
+      expiryDate: insertAnnouncement.expiryDate || null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.announcements.set(id, announcement);
+    return announcement;
+  }
+
+  async getAnnouncements(): Promise<Announcement[]> {
+    return Array.from(this.announcements.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
+  }
+
+  async getActiveAnnouncements(): Promise<Announcement[]> {
+    const now = new Date();
+    return Array.from(this.announcements.values())
+      .filter(a => a.isActive && (!a.expiryDate || a.expiryDate > now))
+      .sort((a, b) => {
+        // Sort by priority first, then by date
+        const priorityOrder = { "high": 3, "normal": 2, "low": 1 };
+        const priorityDiff = priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder];
+        if (priorityDiff !== 0) return priorityDiff;
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      });
+  }
+
+  async updateAnnouncement(id: number, updateData: Partial<InsertAnnouncement>): Promise<Announcement | undefined> {
+    const announcement = this.announcements.get(id);
+    if (announcement) {
+      const updated = { ...announcement, ...updateData, updatedAt: new Date() };
+      this.announcements.set(id, updated);
+      return updated;
+    }
+    return undefined;
+  }
+
+  async deleteAnnouncement(id: number): Promise<boolean> {
+    return this.announcements.delete(id);
+  }
+
+  // Site settings
+  async getSiteSetting(key: string): Promise<SiteSetting | undefined> {
+    return this.siteSettings.get(key);
+  }
+
+  async setSiteSetting(insertSetting: InsertSiteSetting): Promise<SiteSetting> {
+    const existing = this.siteSettings.get(insertSetting.key);
+    const setting: SiteSetting = {
+      id: existing?.id || this.currentSettingId++,
+      key: insertSetting.key,
+      value: insertSetting.value,
+      description: insertSetting.description || null,
+      updatedAt: new Date(),
+    };
+    this.siteSettings.set(insertSetting.key, setting);
+    return setting;
+  }
+
+  async getAllSiteSettings(): Promise<SiteSetting[]> {
+    return Array.from(this.siteSettings.values());
   }
 }
 
