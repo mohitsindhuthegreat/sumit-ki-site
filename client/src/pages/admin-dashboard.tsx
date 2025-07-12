@@ -76,13 +76,13 @@ export default function AdminDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/service-requests"] });
       toast({
-        title: "Status Updated",
-        description: "Service request status updated successfully.",
+        title: "Updated",
+        description: "Service request status updated successfully!",
       });
     },
   });
 
-  // Delete announcement
+  // Delete announcement mutation
   const deleteAnnouncementMutation = useMutation({
     mutationFn: async (id: number) => {
       const response = await apiRequest(`/api/admin/announcements/${id}`, {
@@ -93,8 +93,26 @@ export default function AdminDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/announcements"] });
       toast({
-        title: "Announcement Deleted",
-        description: "Announcement has been deleted successfully.",
+        title: "Deleted",
+        description: "Announcement deleted successfully!",
+      });
+    },
+  });
+
+  // Toggle announcement status
+  const toggleAnnouncementMutation = useMutation({
+    mutationFn: async ({ id, isActive }: { id: number; isActive: boolean }) => {
+      const response = await apiRequest(`/api/admin/announcements/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ isActive }),
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/announcements"] });
+      toast({
+        title: "Status Updated",
+        description: "Announcement status updated successfully.",
       });
     },
   });
@@ -151,6 +169,14 @@ export default function AdminDashboard() {
               >
                 <Plus className="h-4 w-4" />
                 <span>New Announcement</span>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setLocation("/admin/settings")}
+                className="flex items-center space-x-2"
+              >
+                <Settings className="h-4 w-4" />
+                <span>Settings</span>
               </Button>
               <Button
                 variant="outline"
@@ -399,14 +425,30 @@ export default function AdminDashboard() {
                           <Button
                             size="sm"
                             variant="outline"
+                            onClick={() => toggleAnnouncementMutation.mutate({
+                              id: announcement.id,
+                              isActive: !announcement.isActive
+                            })}
+                            className={announcement.isActive ? "text-orange-600" : "text-green-600"}
+                          >
+                            <Eye className="h-4 w-4" />
+                            {announcement.isActive ? "Hide" : "Show"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
                             onClick={() => setLocation(`/admin/edit-announcement/${announcement.id}`)}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
                             size="sm"
-                            variant="outline"
-                            onClick={() => deleteAnnouncementMutation.mutate(announcement.id)}
+                            variant="destructive"
+                            onClick={() => {
+                              if (confirm('Are you sure you want to delete this announcement?')) {
+                                deleteAnnouncementMutation.mutate(announcement.id);
+                              }
+                            }}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

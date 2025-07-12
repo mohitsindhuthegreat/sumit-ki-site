@@ -19,6 +19,8 @@ import SarkariUpdates from "@/pages/sarkari-updates";
 import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AdminCreateAnnouncement from "@/pages/admin-create-announcement";
+import AdminEditAnnouncement from "@/pages/admin-edit-announcement";
+import AdminSettings from "@/pages/admin-settings";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -38,6 +40,8 @@ function Router() {
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/create-announcement" component={AdminCreateAnnouncement} />
+      <Route path="/admin/edit-announcement/:id" component={AdminEditAnnouncement} />
+      <Route path="/admin/settings" component={AdminSettings} />
       <Route component={NotFound} />
     </Switch>
   );
