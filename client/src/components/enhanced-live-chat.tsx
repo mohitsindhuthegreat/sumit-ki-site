@@ -144,7 +144,7 @@ export default function EnhancedLiveChat() {
             <div className="flex items-center space-x-2">
               <Bot className="h-5 w-5 animate-pulse" />
               <div>
-                <CardTitle className="text-sm font-medium">AI Assistant</CardTitle>
+                <CardTitle className="text-sm font-medium">MAHECH ASSISTANT</CardTitle>
                 <p className="text-xs opacity-90">Always here to help!</p>
               </div>
             </div>
