@@ -40,23 +40,38 @@ export default function EnhancedLiveChat() {
 
   const chatMutation = useMutation({
     mutationFn: async (userMessage: string) => {
-      const response = await apiRequest("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({ message: userMessage }),
-      });
-      return response.json();
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: userMessage }),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Chat API error:", error);
+        throw error;
+      }
     },
     onSuccess: (data) => {
       setMessages(prev => prev.filter(m => !m.isTyping).concat([
         {
           id: Date.now().toString(),
-          text: data.response,
+          text: data.response || "माफ करें, कोई जवाब नहीं मिला।",
           sender: 'admin',
           timestamp: new Date()
         }
       ]));
     },
     onError: (error) => {
+      console.error("Chat mutation error:", error);
       setMessages(prev => prev.filter(m => !m.isTyping).concat([
         {
           id: Date.now().toString(),
