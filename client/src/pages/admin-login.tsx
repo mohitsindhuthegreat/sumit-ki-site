@@ -31,13 +31,29 @@ export default function AdminLogin() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: { username: string; password: string }) => {
-      const response = await apiRequest("/api/admin/login", {
+      console.log("Making login request with:", data);
+      
+      const response = await fetch("/api/admin/login", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       });
-      return response.json() as Promise<LoginResponse>;
+      
+      console.log("Response status:", response.status);
+      
+      const result = await response.json();
+      console.log("Response data:", result);
+      
+      if (!response.ok) {
+        throw new Error(result.message || "Login failed");
+      }
+      
+      return result as LoginResponse;
     },
     onSuccess: (data) => {
+      console.log("Login mutation success:", data);
       if (data.success && data.user) {
         localStorage.setItem("admin_user", JSON.stringify(data.user));
         toast({
@@ -53,10 +69,11 @@ export default function AdminLogin() {
         });
       }
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error("Login mutation error:", error);
       toast({
-        title: "Login Error",
-        description: "Failed to login. Please try again.",
+        title: "Login Error", 
+        description: error.message || "Failed to login. Please try again.",
         variant: "destructive",
       });
     },
@@ -64,6 +81,7 @@ export default function AdminLogin() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Form submitted with data:", formData);
     if (formData.username && formData.password) {
       loginMutation.mutate(formData);
     }
