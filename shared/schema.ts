@@ -43,6 +43,7 @@ export const announcements = pgTable("announcements", {
   category: text("category").notNull(), // "vacancy", "news", "form", "update"
   priority: text("priority").default("normal").notNull(), // "high", "normal", "low"
   isActive: boolean("is_active").default(true).notNull(),
+  applyLink: text("apply_link"), // URL for apply now button
   expiryDate: timestamp("expiry_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -87,6 +88,7 @@ export const insertAnnouncementSchema = createInsertSchema(announcements).pick({
   category: true,
   priority: true,
   isActive: true,
+  applyLink: true,
   expiryDate: true,
 });
 

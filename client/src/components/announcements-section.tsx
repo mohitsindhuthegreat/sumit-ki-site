@@ -11,10 +11,12 @@ import {
   AlertCircle, 
   Star,
   ArrowRight,
-  TrendingUp
+  TrendingUp,
+  ExternalLink
 } from "lucide-react";
 import { Link } from "wouter";
 import type { Announcement } from "@shared/schema";
+import AnnouncementDialog from "./announcement-dialog";
 
 export default function AnnouncementsSection() {
   // Fetch active announcements
@@ -146,7 +148,7 @@ export default function AnnouncementsSection() {
                   {announcement.content}
                 </p>
                 
-                <div className="flex items-center justify-between">
+                <div className="space-y-3">
                   <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                     {announcement.expiryDate && (
                       <div className="flex items-center gap-1">
@@ -155,9 +157,23 @@ export default function AnnouncementsSection() {
                       </div>
                     )}
                   </div>
-                  <Button size="sm" variant="outline" className="text-brand-blue border-brand-blue hover:bg-brand-blue hover:text-white">
-                    Read More
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <AnnouncementDialog announcement={announcement}>
+                      <Button size="sm" variant="outline" className="text-brand-blue border-brand-blue hover:bg-brand-blue hover:text-white">
+                        Read More
+                      </Button>
+                    </AnnouncementDialog>
+                    {announcement.applyLink && (
+                      <Button 
+                        size="sm" 
+                        className="bg-brand-blue hover:bg-brand-blue/90 text-white"
+                        onClick={() => window.open(announcement.applyLink, '_blank')}
+                      >
+                        <ExternalLink className="h-3 w-3 mr-1" />
+                        Apply Now
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

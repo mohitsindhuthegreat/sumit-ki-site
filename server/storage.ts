@@ -92,6 +92,7 @@ export class MemStorage implements IStorage {
         category: "vacancy",
         priority: "high",
         isActive: true,
+        applyLink: "https://ssc.nic.in/apply",
         expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
       },
       {
@@ -145,6 +146,7 @@ export class MemStorage implements IStorage {
         contentHindi: announcement.contentHindi || null,
         priority: announcement.priority || "normal",
         isActive: announcement.isActive !== undefined ? announcement.isActive : true,
+        applyLink: announcement.applyLink || null,
         expiryDate: announcement.expiryDate || null,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -234,6 +236,7 @@ export class MemStorage implements IStorage {
       contentHindi: insertAnnouncement.contentHindi || null,
       priority: insertAnnouncement.priority || "normal",
       isActive: insertAnnouncement.isActive !== undefined ? insertAnnouncement.isActive : true,
+      applyLink: insertAnnouncement.applyLink || null,
       expiryDate: insertAnnouncement.expiryDate || null,
       createdAt: new Date(),
       updatedAt: new Date(),

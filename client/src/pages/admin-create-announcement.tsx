@@ -47,6 +47,7 @@ export default function AdminCreateAnnouncement() {
       category: "news",
       priority: "normal",
       isActive: true,
+      applyLink: "",
       expiryDate: "",
     },
   });
@@ -263,6 +264,27 @@ export default function AdminCreateAnnouncement() {
                     )}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="applyLink"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Apply Link (Optional)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter apply link (e.g., https://example.com/apply)"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <div className="text-sm text-muted-foreground">
+                        If provided, an "Apply Now" button will appear for this announcement
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}

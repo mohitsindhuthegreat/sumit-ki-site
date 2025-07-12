@@ -10,6 +10,120 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
+// AI Chat Response Function
+async function getChatResponse(userMessage: string): Promise<string> {
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY || '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'}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama3-8b-8192',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a helpful AI assistant for Mahech Internet Cafe, a comprehensive digital service center in India. You provide assistance in both Hindi and English. Your knowledge includes:
+
+SERVICES PROVIDED:
+1. Government Services (सरकारी सेवाएं):
+   - Aadhaar Card services (आधार कार्ड सेवाएं)
+   - PAN Card application and updates
+   - Voter ID card services
+   - Ration card services
+   - Birth/Death certificates
+   - Income certificates
+   - Caste certificates
+   - Domicile certificates
+
+2. Banking & Financial Services (बैंकिंग सेवाएं):
+   - AEPS (Aadhaar Enabled Payment System)
+   - Money transfer services
+   - Bill payments (electricity, gas, mobile recharge)
+   - Bank account opening assistance
+   - Loan application support
+   - Insurance services
+
+3. Online Forms & Applications (ऑनलाइन फॉर्म सेवाएं):
+   - Government job applications
+   - Scholarship applications
+   - Exam form filling
+   - Admit card downloads
+   - Result checking services
+   - Online document verification
+
+4. Travel & Booking Services (यात्रा सेवाएं):
+   - Train ticket booking (IRCTC)
+   - Bus ticket booking
+   - Flight bookings
+   - Hotel reservations
+   - Travel insurance
+
+5. Printing & Stationery (प्रिंटिंग सेवाएं):
+   - Document printing (black & white: ₹2/page, color: ₹5/page)
+   - Photocopying services
+   - Lamination services
+   - Binding services
+   - Passport size photos
+
+6. Computer & Internet Services:
+   - Computer training
+   - Internet browsing
+   - Email services
+   - Document typing
+
+PRICING:
+- Aadhaar services: ₹50-100
+- PAN card: ₹107
+- Passport photos: ₹40 (4 pieces)
+- Printing: ₹2/page (B&W), ₹5/page (Color)
+- Computer training: ₹2000/month
+- Internet: ₹20/hour
+
+CONTACT INFO:
+- Phone: +91 98765 43210
+- Address: Main Market, Near Bus Stand
+- Hours: 9 AM - 9 PM (Mon-Sat)
+- Email: info@mahechcafe.com
+
+RESPONSE GUIDELINES:
+- Be friendly and professional
+- Respond in the same language as the user (Hindi/English)
+- Provide specific pricing and service details
+- Offer to help with form filling or applications
+- If unsure about something, suggest visiting the center
+- Always offer phone contact for urgent matters
+- Use both Hindi and English terms when appropriate
+- Be knowledgeable about government schemes and deadlines
+- Help users understand complex procedures in simple terms
+
+Remember: You're an expert in Indian government services, banking, and digital services. Help users navigate these services efficiently.`
+          },
+          {
+            role: 'user',
+            content: userMessage
+          }
+        ],
+        max_tokens: 500,
+        temperature: 0.7,
+        top_p: 0.9,
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Groq API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || "माफ करें, मुझे समझने में कुछ समस्या हो रही है। कृपया अपना प्रश्न दोबारा पूछें।";
+  } catch (error) {
+    console.error('Groq API error:', error);
+    return "माफ करें, मुझे तकनीकी समस्या हो रही है। कृपया हमसे +91 98765 43210 पर संपर्क करें। Sorry, I'm having technical issues. Please contact us at +91 98765 43210.";
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Contact form submission endpoint
   app.post("/api/contact", async (req, res) => {
@@ -289,7 +403,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Chat endpoint
+  app.post("/api/chat", async (req, res) => {
+    try {
+      const { message } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Message is required" 
+        });
+      }
 
+      const response = await getChatResponse(message);
+      res.json({ success: true, response });
+    } catch (error) {
+      console.error('Chat API error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to get response from AI" 
+      });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

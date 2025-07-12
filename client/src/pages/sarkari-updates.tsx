@@ -18,9 +18,11 @@ import {
   TrendingUp,
   Users,
   BookOpen,
-  Award
+  Award,
+  ExternalLink
 } from "lucide-react";
 import type { Announcement } from "@shared/schema";
+import AnnouncementDialog from "@/components/announcement-dialog";
 
 export default function SarkariUpdates() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -314,18 +316,26 @@ export default function SarkariUpdates() {
                       </div>
                       
                       <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="text-brand-blue border-brand-blue hover:bg-brand-blue hover:text-white"
-                          onClick={() => {
-                            // Open announcement in a modal or new page
-                            window.open(`/sarkari-updates/${announcement.id}`, '_blank');
-                          }}
-                        >
-                          <BookOpen className="h-4 w-4 mr-1" />
-                          Read More
-                        </Button>
+                        <AnnouncementDialog announcement={announcement}>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-brand-blue border-brand-blue hover:bg-brand-blue hover:text-white"
+                          >
+                            <BookOpen className="h-4 w-4 mr-1" />
+                            Read More
+                          </Button>
+                        </AnnouncementDialog>
+                        {announcement.applyLink && (
+                          <Button 
+                            size="sm" 
+                            className="bg-brand-blue hover:bg-brand-blue/90 text-white"
+                            onClick={() => window.open(announcement.applyLink, '_blank')}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            Apply Now
+                          </Button>
+                        )}
                         <Button 
                           size="sm" 
                           variant="outline"
