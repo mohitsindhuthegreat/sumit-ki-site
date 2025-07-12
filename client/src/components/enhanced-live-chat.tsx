@@ -31,11 +31,22 @@ export default function EnhancedLiveChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: "smooth", 
+        block: "end",
+        inline: "nearest"
+      });
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // Add a small delay to ensure the message is rendered before scrolling
+    const timer = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [messages]);
 
   const chatMutation = useMutation({
@@ -118,16 +129,16 @@ export default function EnhancedLiveChat() {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button
           onClick={() => setIsOpen(true)}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full p-4 shadow-lg animate-pulse"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full p-3 sm:p-4 shadow-lg animate-pulse"
           size="lg"
         >
-          <MessageCircle className="h-6 w-6" />
+          <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
           <span className="sr-only">Open AI Chat</span>
         </Button>
-        <Badge className="absolute -top-2 -left-2 bg-gradient-to-r from-green-500 to-blue-500 text-white animate-bounce">
+        <Badge className="absolute -top-2 -left-2 bg-gradient-to-r from-green-500 to-blue-500 text-white animate-bounce text-xs">
           AI Live
         </Badge>
       </div>
@@ -135,17 +146,19 @@ export default function EnhancedLiveChat() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <Card className={`w-80 shadow-2xl border-0 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900 transition-all duration-300 ${
-        isMinimized ? 'h-16' : 'h-96'
+    <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
+      <Card className={`shadow-2xl border-0 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900 transition-all duration-300 ${
+        isMinimized 
+          ? 'w-80 sm:w-96 h-16' 
+          : 'w-80 sm:w-96 md:w-[420px] lg:w-[480px] h-[400px] sm:h-[500px] md:h-[550px] lg:h-[600px]'
       }`}>
-        <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-t-lg">
+        <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 sm:p-4 rounded-t-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Bot className="h-5 w-5 animate-pulse" />
+              <Bot className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" />
               <div>
-                <CardTitle className="text-sm font-medium">MAHECH ASSISTANT</CardTitle>
-                <p className="text-xs opacity-90">Always here to help!</p>
+                <CardTitle className="text-sm sm:text-base font-medium">MAHECH ASSISTANT</CardTitle>
+                <p className="text-xs sm:text-sm opacity-90">Always here to help!</p>
               </div>
             </div>
             <div className="flex items-center space-x-1">
@@ -153,40 +166,40 @@ export default function EnhancedLiveChat() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMinimized(!isMinimized)}
-                className="h-8 w-8 p-0 hover:bg-white/20 text-white"
+                className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-white/20 text-white"
               >
-                <Minimize2 className="h-4 w-4" />
+                <Minimize2 className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsOpen(false)}
-                className="h-8 w-8 p-0 hover:bg-white/20 text-white"
+                className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-white/20 text-white"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
         </CardHeader>
         
         {!isMinimized && (
-          <CardContent className="p-0 flex flex-col h-80">
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-transparent to-blue-50/50 dark:to-gray-900/50">
+          <CardContent className="p-0 flex flex-col h-[calc(100%-70px)] sm:h-[calc(100%-80px)]">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gradient-to-b from-transparent to-blue-50/50 dark:to-gray-900/50 scroll-smooth">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
                   className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`flex items-start space-x-2 max-w-xs ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                  <div className={`flex items-start space-x-2 max-w-[85%] sm:max-w-xs md:max-w-sm lg:max-w-md ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold ${
                       msg.sender === 'user' 
                         ? 'bg-blue-600 text-white' 
                         : 'bg-gradient-to-r from-purple-500 to-blue-500 text-white'
                     }`}>
-                      {msg.sender === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                      {msg.sender === 'user' ? <User className="h-3 w-3 sm:h-4 sm:w-4" /> : <Bot className="h-3 w-3 sm:h-4 sm:w-4" />}
                     </div>
                     <div
-                      className={`px-3 py-2 rounded-lg text-sm relative shadow-md ${
+                      className={`px-2 sm:px-3 py-2 sm:py-3 rounded-lg text-xs sm:text-sm relative shadow-md ${
                         msg.sender === 'user'
                           ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
                           : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
@@ -198,7 +211,7 @@ export default function EnhancedLiveChat() {
                           <span className="text-xs">AI is thinking...</span>
                         </div>
                       ) : (
-                        <div className="whitespace-pre-wrap">{msg.text}</div>
+                        <div className="whitespace-pre-wrap leading-relaxed">{msg.text}</div>
                       )}
                       <div className={`text-xs mt-1 opacity-70 ${
                         msg.sender === 'user' ? 'text-white' : 'text-gray-500'
@@ -212,20 +225,20 @@ export default function EnhancedLiveChat() {
               <div ref={messagesEndRef} />
             </div>
             
-            <div className="p-4 border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+            <div className="p-3 sm:p-4 border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
               <div className="flex space-x-2">
                 <Input
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Type your message... / अपना संदेश लिखें..."
-                  className="flex-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                  className="flex-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
                   disabled={chatMutation.isPending}
                 />
                 <Button
                   onClick={sendMessage}
                   disabled={!message.trim() || chatMutation.isPending}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-3 sm:px-4"
                 >
                   {chatMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
