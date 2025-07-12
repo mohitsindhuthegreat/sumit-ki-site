@@ -87,6 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { username, password } = loginSchema.parse(req.body);
       
       const user = await storage.getUserByUsername(username);
+      
       if (!user || user.password !== password || user.role !== "admin") {
         return res.status(401).json({ 
           success: false, 
@@ -287,6 +288,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   });
+
+
 
   const httpServer = createServer(app);
   return httpServer;

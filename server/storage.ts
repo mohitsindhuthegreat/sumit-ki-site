@@ -67,7 +67,7 @@ export class MemStorage implements IStorage {
     this.createDefaultAdmin();
   }
 
-  private async createDefaultAdmin() {
+  private createDefaultAdmin() {
     const adminUser: User = {
       id: this.currentUserId++,
       username: "sumit",
@@ -136,8 +136,20 @@ export class MemStorage implements IStorage {
       }
     ];
 
-    sampleAnnouncements.forEach(async (announcement) => {
-      await this.createAnnouncement(announcement);
+    sampleAnnouncements.forEach((announcement) => {
+      const id = this.currentAnnouncementId++;
+      const announcementData: Announcement = {
+        ...announcement,
+        id,
+        titleHindi: announcement.titleHindi || null,
+        contentHindi: announcement.contentHindi || null,
+        priority: announcement.priority || "normal",
+        isActive: announcement.isActive !== undefined ? announcement.isActive : true,
+        expiryDate: announcement.expiryDate || null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      this.announcements.set(id, announcementData);
     });
   }
 
