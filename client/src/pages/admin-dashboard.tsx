@@ -67,10 +67,7 @@ export default function AdminDashboard() {
   // Update service request status
   const updateServiceRequestMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      const response = await apiRequest(`/api/admin/service-request/${id}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      });
+      const response = await apiRequest("PATCH", `/api/admin/service-request/${id}/status`, { status });
       return response.json();
     },
     onSuccess: () => {
@@ -86,9 +83,7 @@ export default function AdminDashboard() {
   const deleteAnnouncementMutation = useMutation({
     mutationFn: async (id: number) => {
       console.log("Deleting announcement with ID:", id);
-      const response = await apiRequest(`/api/admin/announcements/${id}`, {
-        method: "DELETE",
-      });
+      const response = await apiRequest("DELETE", `/api/admin/announcements/${id}`);
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -118,10 +113,7 @@ export default function AdminDashboard() {
   // Toggle announcement status
   const toggleAnnouncementMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: number; isActive: boolean }) => {
-      const response = await apiRequest(`/api/admin/announcements/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ isActive }),
-      });
+      const response = await apiRequest("PATCH", `/api/admin/announcements/${id}`, { isActive });
       return response.json();
     },
     onSuccess: () => {

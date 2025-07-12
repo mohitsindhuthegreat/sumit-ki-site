@@ -44,7 +44,7 @@ export default function AdminEditAnnouncement() {
   const { data: announcement, isLoading } = useQuery({
     queryKey: ["/api/admin/announcements", announcementId],
     queryFn: async () => {
-      const response = await apiRequest(`/api/admin/announcements`);
+      const response = await apiRequest("GET", `/api/admin/announcements`);
       const announcements = await response.json();
       return announcements.find((a: any) => a.id === announcementId);
     },
