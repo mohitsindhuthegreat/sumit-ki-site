@@ -203,7 +203,23 @@ export default function PrintingServices() {
                   )}
                 </div>
 
-                <Button className={`w-full ${service.color} hover:opacity-90 text-white`}>
+                <Button 
+                  className={`w-full ${service.color} hover:opacity-90 text-white`}
+                  onClick={() => {
+                    // Create service request
+                    const serviceRequest = {
+                      service_category: "printing",
+                      service_type: service.title,
+                      details: `Interested in ${service.title} - ${service.titleHindi}. Services needed: ${service.services.slice(0, 3).join(', ')}`
+                    };
+                    
+                    // Store request in localStorage for form prefill
+                    localStorage.setItem('service_request', JSON.stringify(serviceRequest));
+                    
+                    // Navigate to contact page
+                    window.location.href = '/contact';
+                  }}
+                >
                   Get Service / सेवा लें
                 </Button>
               </CardContent>

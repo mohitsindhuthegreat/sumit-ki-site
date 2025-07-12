@@ -143,7 +143,18 @@ export default function GovernmentServices() {
                   </Badge>
                 </div>
 
-                <Button className={`w-full ${service.color} hover:opacity-90 text-white`}>
+                <Button 
+                  className={`w-full ${service.color} hover:opacity-90 text-white`}
+                  onClick={() => {
+                    const serviceRequest = {
+                      service_category: "government",
+                      service_type: service.title,
+                      details: `Interested in ${service.title} - ${service.titleHindi}. Services needed: ${service.services.slice(0, 3).join(', ')}. Price: ${service.price}`
+                    };
+                    localStorage.setItem('service_request', JSON.stringify(serviceRequest));
+                    window.location.href = '/contact';
+                  }}
+                >
                   Apply Now / अभी आवेदन करें
                 </Button>
               </CardContent>

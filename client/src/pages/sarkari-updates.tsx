@@ -314,11 +314,34 @@ export default function SarkariUpdates() {
                       </div>
                       
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="text-brand-blue border-brand-blue hover:bg-brand-blue hover:text-white">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-brand-blue border-brand-blue hover:bg-brand-blue hover:text-white"
+                          onClick={() => {
+                            // Open announcement in a modal or new page
+                            window.open(`/sarkari-updates/${announcement.id}`, '_blank');
+                          }}
+                        >
                           <BookOpen className="h-4 w-4 mr-1" />
                           Read More
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            // Generate and download PDF
+                            const element = document.createElement('a');
+                            const file = new Blob([
+                              `${announcement.title}\n\n${announcement.content}\n\n${announcement.contentHindi || ''}\n\nCreated: ${formatDate(announcement.createdAt)}\n\nSource: Mahech Internet Cafe - Sarkari Updates`
+                            ], { type: 'text/plain' });
+                            element.href = URL.createObjectURL(file);
+                            element.download = `${announcement.title.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+                            document.body.appendChild(element);
+                            element.click();
+                            document.body.removeChild(element);
+                          }}
+                        >
                           <FileText className="h-4 w-4 mr-1" />
                           Download
                         </Button>

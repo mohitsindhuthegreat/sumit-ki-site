@@ -149,7 +149,18 @@ export default function BankingServices() {
                   Service Charges: {service.charges}
                 </Badge>
 
-                <Button className={`w-full ${service.color} hover:opacity-90 text-white`}>
+                <Button 
+                  className={`w-full ${service.color} hover:opacity-90 text-white`}
+                  onClick={() => {
+                    const serviceRequest = {
+                      service_category: "banking",
+                      service_type: service.title,
+                      details: `Interested in ${service.title} - ${service.titleHindi}. Services needed: ${service.services.slice(0, 3).join(', ')}`
+                    };
+                    localStorage.setItem('service_request', JSON.stringify(serviceRequest));
+                    window.location.href = '/contact';
+                  }}
+                >
                   Use Service / सेवा का उपयोग करें
                 </Button>
               </CardContent>

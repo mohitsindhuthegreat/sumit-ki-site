@@ -188,7 +188,18 @@ export default function TravelServices() {
                   Service Charges: {service.charges}
                 </Badge>
 
-                <Button className={`w-full ${service.color} hover:opacity-90 text-white`}>
+                <Button 
+                  className={`w-full ${service.color} hover:opacity-90 text-white`}
+                  onClick={() => {
+                    const serviceRequest = {
+                      service_category: "travel",
+                      service_type: service.title,
+                      details: `Interested in ${service.title} - ${service.titleHindi}. Services needed: ${service.services.slice(0, 3).join(', ')}. Charges: ${service.charges}`
+                    };
+                    localStorage.setItem('service_request', JSON.stringify(serviceRequest));
+                    window.location.href = '/contact';
+                  }}
+                >
                   Book Now / अभी बुक करें
                 </Button>
               </CardContent>
@@ -227,7 +238,18 @@ export default function TravelServices() {
                     <div className="text-2xl font-bold text-brand-blue mb-4">
                       {pkg.price}
                     </div>
-                    <Button className="bg-brand-blue hover:bg-brand-navy text-white">
+                    <Button 
+                      className="bg-brand-blue hover:bg-brand-navy text-white"
+                      onClick={() => {
+                        const serviceRequest = {
+                          service_category: "travel",
+                          service_type: `Travel Package - ${pkg.destination}`,
+                          details: `Interested in ${pkg.destination} travel package. Duration: ${pkg.duration}. Price: ${pkg.price}. Includes: ${pkg.includes}. Highlights: ${pkg.highlights.join(', ')}`
+                        };
+                        localStorage.setItem('service_request', JSON.stringify(serviceRequest));
+                        window.location.href = '/contact';
+                      }}
+                    >
                       Book Package
                     </Button>
                   </div>

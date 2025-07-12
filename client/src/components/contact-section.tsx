@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,20 @@ export default function ContactSection() {
     phone: "",
     message: ""
   });
+
+  // Check for prefilled service request
+  useEffect(() => {
+    const serviceRequest = localStorage.getItem('service_request');
+    if (serviceRequest) {
+      const request = JSON.parse(serviceRequest);
+      setFormData(prev => ({
+        ...prev,
+        message: `Service Request: ${request.service_type}\n\nDetails: ${request.details}\n\nPlease contact me regarding this service.`
+      }));
+      // Clear the service request after using it
+      localStorage.removeItem('service_request');
+    }
+  }, []);
 
   const contactMutation = useMutation({
     mutationFn: async (data: ContactFormData) => {

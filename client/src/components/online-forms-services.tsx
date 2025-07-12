@@ -158,7 +158,18 @@ export default function OnlineFormsServices() {
                   Service Charges: {service.charges}
                 </Badge>
 
-                <Button className={`w-full ${service.color} hover:opacity-90 text-white`}>
+                <Button 
+                  className={`w-full ${service.color} hover:opacity-90 text-white`}
+                  onClick={() => {
+                    const serviceRequest = {
+                      service_category: "online_forms",
+                      service_type: service.title,
+                      details: `Interested in ${service.title} - ${service.titleHindi}. Services needed: ${service.services.slice(0, 3).join(', ')}. Charges: ${service.charges}`
+                    };
+                    localStorage.setItem('service_request', JSON.stringify(serviceRequest));
+                    window.location.href = '/contact';
+                  }}
+                >
                   Get Help / सहायता लें
                 </Button>
               </CardContent>
