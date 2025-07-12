@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { Wifi, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link, useLocation } from "wouter";
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [location] = useLocation();
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+  const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
 
@@ -27,54 +25,30 @@ export default function Navigation() {
           
           {/* Desktop Navigation */}
           <div className="hidden lg:flex space-x-6">
-            <button 
-              onClick={() => scrollToSection("home")} 
-              className="text-gray-700 hover:text-brand-blue transition-colors"
-            >
+            <Link href="/" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/' ? 'text-brand-blue font-semibold' : ''}`}>
               Home
-            </button>
-            <button 
-              onClick={() => scrollToSection("services")} 
-              className="text-gray-700 hover:text-brand-blue transition-colors"
-            >
-              Services
-            </button>
-            <button 
-              onClick={() => scrollToSection("about")} 
-              className="text-gray-700 hover:text-brand-blue transition-colors"
-            >
+            </Link>
+            <Link href="/about" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/about' ? 'text-brand-blue font-semibold' : ''}`}>
               About
-            </button>
-            <button 
-              onClick={() => scrollToSection("government-services")} 
-              className="text-gray-700 hover:text-brand-blue transition-colors"
-            >
+            </Link>
+            <Link href="/government-services" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/government-services' ? 'text-brand-blue font-semibold' : ''}`}>
               Government ID
-            </button>
-            <button 
-              onClick={() => scrollToSection("banking-services")} 
-              className="text-gray-700 hover:text-brand-blue transition-colors"
-            >
+            </Link>
+            <Link href="/banking-services" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/banking-services' ? 'text-brand-blue font-semibold' : ''}`}>
               Banking
-            </button>
-            <button 
-              onClick={() => scrollToSection("printing-services")} 
-              className="text-gray-700 hover:text-brand-blue transition-colors"
-            >
+            </Link>
+            <Link href="/printing-services" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/printing-services' ? 'text-brand-blue font-semibold' : ''}`}>
               Printing
-            </button>
-            <button 
-              onClick={() => scrollToSection("travel-services")} 
-              className="text-gray-700 hover:text-brand-blue transition-colors"
-            >
+            </Link>
+            <Link href="/online-forms" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/online-forms' ? 'text-brand-blue font-semibold' : ''}`}>
+              Online Forms
+            </Link>
+            <Link href="/travel-services" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/travel-services' ? 'text-brand-blue font-semibold' : ''}`}>
               Travel
-            </button>
-            <button 
-              onClick={() => scrollToSection("contact")} 
-              className="text-gray-700 hover:text-brand-blue transition-colors"
-            >
+            </Link>
+            <Link href="/contact" className={`text-gray-700 hover:text-brand-blue transition-colors ${location === '/contact' ? 'text-brand-blue font-semibold' : ''}`}>
               Contact
-            </button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -94,60 +68,30 @@ export default function Navigation() {
         {isMobileMenuOpen && (
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
-              <button 
-                onClick={() => scrollToSection("home")} 
-                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
-              >
+              <Link href="/" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/' ? 'text-brand-blue font-semibold' : ''}`}>
                 Home
-              </button>
-              <button 
-                onClick={() => scrollToSection("services")} 
-                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
-              >
-                Services
-              </button>
-              <button 
-                onClick={() => scrollToSection("about")} 
-                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
-              >
+              </Link>
+              <Link href="/about" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/about' ? 'text-brand-blue font-semibold' : ''}`}>
                 About
-              </button>
-              <button 
-                onClick={() => scrollToSection("government-services")} 
-                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
-              >
+              </Link>
+              <Link href="/government-services" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/government-services' ? 'text-brand-blue font-semibold' : ''}`}>
                 Government ID
-              </button>
-              <button 
-                onClick={() => scrollToSection("banking-services")} 
-                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
-              >
+              </Link>
+              <Link href="/banking-services" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/banking-services' ? 'text-brand-blue font-semibold' : ''}`}>
                 Banking & Bills
-              </button>
-              <button 
-                onClick={() => scrollToSection("printing-services")} 
-                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
-              >
+              </Link>
+              <Link href="/printing-services" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/printing-services' ? 'text-brand-blue font-semibold' : ''}`}>
                 Printing
-              </button>
-              <button 
-                onClick={() => scrollToSection("online-forms-services")} 
-                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
-              >
+              </Link>
+              <Link href="/online-forms" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/online-forms' ? 'text-brand-blue font-semibold' : ''}`}>
                 Online Forms
-              </button>
-              <button 
-                onClick={() => scrollToSection("travel-services")} 
-                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
-              >
+              </Link>
+              <Link href="/travel-services" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/travel-services' ? 'text-brand-blue font-semibold' : ''}`}>
                 Travel
-              </button>
-              <button 
-                onClick={() => scrollToSection("contact")} 
-                className="block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors w-full text-left"
-              >
+              </Link>
+              <Link href="/contact" onClick={closeMobileMenu} className={`block px-3 py-2 text-gray-700 hover:text-brand-blue transition-colors ${location === '/contact' ? 'text-brand-blue font-semibold' : ''}`}>
                 Contact
-              </button>
+              </Link>
             </div>
           </div>
         )}

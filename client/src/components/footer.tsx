@@ -1,15 +1,15 @@
 import { Wifi } from "lucide-react";
+import { Link } from "wouter";
 
 const quickLinks = [
-  { name: "Home", href: "#home" },
-  { name: "Services", href: "#services" },
-  { name: "About Us", href: "#about" },
-  { name: "Government ID", href: "#government-services" },
-  { name: "Banking & Bills", href: "#banking-services" },
-  { name: "Printing", href: "#printing-services" },
-  { name: "Online Forms", href: "#online-forms-services" },
-  { name: "Travel Booking", href: "#travel-services" },
-  { name: "Contact", href: "#contact" }
+  { name: "Home", href: "/" },
+  { name: "About Us", href: "/about" },
+  { name: "Government ID", href: "/government-services" },
+  { name: "Banking & Bills", href: "/banking-services" },
+  { name: "Printing", href: "/printing-services" },
+  { name: "Online Forms", href: "/online-forms" },
+  { name: "Travel Booking", href: "/travel-services" },
+  { name: "Contact", href: "/contact" }
 ];
 
 const services = [
@@ -22,12 +22,6 @@ const services = [
 ];
 
 export default function Footer() {
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId.replace("#", ""));
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <footer className="bg-gray-900 text-white py-12">
@@ -74,12 +68,9 @@ export default function Footer() {
             <ul className="space-y-2">
               {quickLinks.map((link, index) => (
                 <li key={index}>
-                  <button 
-                    onClick={() => scrollToSection(link.href)}
-                    className="text-gray-400 hover:text-white transition-colors text-left"
-                  >
+                  <Link href={link.href} className="text-gray-400 hover:text-white transition-colors">
                     {link.name}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -121,18 +112,12 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="text-center mb-4">
             <div className="flex justify-center space-x-6 mb-4">
-              <button 
-                onClick={() => scrollToSection("privacy-policy")}
-                className="text-gray-400 hover:text-brand-cyan transition-colors text-sm"
-              >
+              <Link href="/privacy-policy" className="text-gray-400 hover:text-brand-cyan transition-colors text-sm">
                 Privacy Policy
-              </button>
-              <button 
-                onClick={() => scrollToSection("terms-conditions")}
-                className="text-gray-400 hover:text-brand-cyan transition-colors text-sm"
-              >
+              </Link>
+              <Link href="/terms-conditions" className="text-gray-400 hover:text-brand-cyan transition-colors text-sm">
                 Terms & Conditions
-              </button>
+              </Link>
               <a 
                 href="mailto:info@mahechcafe.com" 
                 className="text-gray-400 hover:text-brand-cyan transition-colors text-sm"

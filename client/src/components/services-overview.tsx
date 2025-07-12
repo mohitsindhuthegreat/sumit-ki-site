@@ -1,6 +1,7 @@
 import { FileText, CreditCard, Printer, Globe, Plane, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 const mainServices = [
   {
@@ -11,7 +12,7 @@ const mainServices = [
     descriptionHindi: "सभी सरकारी पहचान दस्तावेज और आवेदन के लिए पूर्ण सहायता",
     services: ["Aadhaar Card", "PAN Card", "Voter ID", "Ration Card", "Ayushman Bharat"],
     color: "bg-brand-blue",
-    sectionId: "government-services"
+    route: "/government-services"
   },
   {
     icon: CreditCard,
@@ -21,7 +22,7 @@ const mainServices = [
     descriptionHindi: "सभी बैंकिंग सेवाएं, बिल भुगतान और पैसे ट्रांसफर समाधान",
     services: ["Bill Payments", "Money Transfer", "AEPS", "Balance Check", "Insurance"],
     color: "bg-green-600",
-    sectionId: "banking-services"
+    route: "/banking-services"
   },
   {
     icon: Printer,
@@ -31,7 +32,7 @@ const mainServices = [
     descriptionHindi: "व्यावसायिक प्रिंटिंग, स्कैनिंग और दस्तावेज सेवाएं",
     services: ["Color/B&W Printing", "Scanning", "Lamination", "Resume Making"],
     color: "bg-brand-cyan",
-    sectionId: "printing-services"
+    route: "/printing-services"
   },
   {
     icon: Globe,
@@ -41,7 +42,7 @@ const mainServices = [
     descriptionHindi: "पूर्ण ऑनलाइन फॉर्म भरना और परीक्षा संबंधी सेवाएं",
     services: ["Form Filling", "Admit Cards", "Results", "Scholarship Forms"],
     color: "bg-purple-600",
-    sectionId: "online-forms-services"
+    route: "/online-forms"
   },
   {
     icon: Plane,
@@ -51,7 +52,7 @@ const mainServices = [
     descriptionHindi: "आपकी सभी यात्रा आवश्यकताओं के लिए पूर्ण यात्रा बुकिंग समाधान",
     services: ["Train Tickets", "Bus Tickets", "Flight Booking", "Hotel Booking"],
     color: "bg-orange-600",
-    sectionId: "travel-services"
+    route: "/travel-services"
   },
   {
     icon: Users,
@@ -61,17 +62,11 @@ const mainServices = [
     descriptionHindi: "आपकी सभी डिजिटल आवश्यकताओं के लिए 24/7 पेशेवर सहायता",
     services: ["Technical Support", "Digital Guidance", "Form Assistance", "Documentation"],
     color: "bg-indigo-600",
-    sectionId: "contact"
+    route: "/contact"
   }
 ];
 
 export default function ServicesOverview() {
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <section id="services" className="py-20 bg-white dark:bg-slate-800">
@@ -116,12 +111,11 @@ export default function ServicesOverview() {
                     </li>
                   ))}
                 </ul>
-                <Button 
-                  onClick={() => scrollToSection(service.sectionId)}
-                  className={`w-full ${service.color} hover:opacity-90 text-white`}
-                >
-                  Learn More
-                </Button>
+                <Link href={service.route}>
+                  <a className={`w-full inline-block ${service.color} hover:opacity-90 text-white rounded-md px-4 py-2 text-center font-medium transition-colors`}>
+                    Learn More
+                  </a>
+                </Link>
               </CardContent>
             </Card>
           ))}

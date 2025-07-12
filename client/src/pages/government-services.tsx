@@ -1,14 +1,12 @@
 import Navigation from "@/components/navigation";
-import HeroSection from "@/components/hero-section";
-import ServicesOverview from "@/components/services-overview";
+import GovernmentServices from "@/components/government-services";
 import Footer from "@/components/footer";
 
-export default function Home() {
+export default function GovernmentServicesPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <Navigation />
-      <HeroSection />
-      <ServicesOverview />
+      <GovernmentServices />
       <Footer />
     </div>
   );
