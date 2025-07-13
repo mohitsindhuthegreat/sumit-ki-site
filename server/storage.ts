@@ -898,3 +898,61 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return setting;
+  }
+
+  async getAllSiteSettings(): Promise<SiteSetting[]> {
+    return await db.select().from(siteSettings);
+  }
+
+  // Auto-update system for DatabaseStorage
+  async autoUpdateExpiredAnnouncements(): Promise<void> {
+    const today = new Date();
+
+    // Mark expired announcements as inactive
+    await db
+      .update(announcements)
+      .set({ isActive: false })
+      .where(
+        and(
+          eq(announcements.isActive, true),
+          isNotNull(announcements.expiryDate),
+          lt(announcements.expiryDate, today)
+        )
+      );
+
+    // Check if we need fresh announcements
+    const activeCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(announcements)
+      .where(eq(announcements.isActive, true));
+
+    if (activeCount[0]?.count < 4) {
+      await this.addFreshAnnouncementsToDatabase();
+    }
+  }
+
+  private async addFreshAnnouncementsToDatabase(): Promise<void> {
+    const today = new Date();
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+
+    const freshAnnouncements = [
+      {
+        title: "Fresh Government Job Alert - Auto Updated",
+        titleHindi: "ताजा सरकारी नौकरी अलर्ट - स्वतः अपडेट",
+        content: "New government job opportunities have been automatically updated based on latest notifications.",
+        contentHindi: "नवीनतम अधिसूचनाओं के आधार पर नए सरकारी नौकरी के अवसर स्वचालित रूप से अपडेट किए गए हैं।",
+        category: "vacancy",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://example.com",
+        expiryDate: nextWeek
+      }
+    ];
+
+    await db.insert(announcements).values(freshAnnouncements);
+  }
+}
+
+// Export a singleton instance
+export const storage: IStorage = new DatabaseStorage();
