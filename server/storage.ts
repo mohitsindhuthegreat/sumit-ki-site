@@ -840,19 +840,117 @@ export class DatabaseStorage implements IStorage {
   }
 
   private async addFreshAnnouncements(): Promise<void> {
+    try {
+      // Try to fetch AI-generated content first
+      const aiJobs = await this.getAIGeneratedJobs();
+      
+      if (aiJobs.length > 0) {
+        // Add AI-generated fresh announcements
+        const jobsToAdd = aiJobs.slice(0, 3); // Add up to 3 fresh announcements
+        await db.insert(announcements).values(jobsToAdd);
+        console.log(`Added ${jobsToAdd.length} AI-generated job announcements`);
+      } else {
+        // Fallback to static content if AI fails
+        await this.addStaticFreshAnnouncements();
+      }
+    } catch (error) {
+      console.error('Error adding AI-generated jobs, using fallback:', error);
+      await this.addStaticFreshAnnouncements();
+    }
+  }
+
+  private async getAIGeneratedJobs(): Promise<any[]> {
+    try {
+      const currentDate = new Date().toISOString().split('T')[0];
+      
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY || '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'}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'llama3-70b-8192',
+          messages: [
+            {
+              role: 'system',
+              content: `You are an expert government job research assistant for Indian government notifications. Generate realistic and current Indian government job notifications and form deadlines for ${currentDate}. 
+
+IMPORTANT: Return ONLY a valid JSON array of 3 objects, no other text or formatting. Each object must have this exact structure:
+[
+  {
+    "title": "Job/Form Title in English",
+    "titleHindi": "Job/Form Title in Hindi",
+    "content": "Detailed description in English (50-100 words)",
+    "contentHindi": "Detailed description in Hindi (50-100 words)",
+    "category": "vacancy",
+    "priority": "high",
+    "applyLink": "https://official-website.com",
+    "daysToExpiry": 15
+  }
+]
+
+Focus on: SSC, Railway, Banking, UPSC, State Government, Teaching, Police, and other popular Indian government opportunities. Make content realistic and current with proper official websites.`
+            },
+            {
+              role: 'user',
+              content: `Generate 3 fresh government job/form notifications for today ${currentDate}. Include mix of:
+- 1 urgent form (7-15 days remaining)
+- 1 job vacancy (15-30 days remaining) 
+- 1 regular update (20-45 days remaining)
+
+Focus on current popular categories like SSC CGL/CHSL, Railway RRB, Banking IBPS/SBI, UPSC CSE, State PSC, Teaching TET/CTET, and Police SI/Constable recruitment.`
+            }
+          ],
+          max_tokens: 1500,
+          temperature: 0.8,
+          top_p: 0.9,
+          stream: false
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Groq API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const aiResponse = data.choices[0]?.message?.content || '[]';
+      
+      // Clean response and parse
+      const cleanResponse = aiResponse.replace(/```json\n?|\n?```/g, '').trim();
+      const jobs = JSON.parse(cleanResponse);
+      const now = new Date();
+      
+      return jobs.map((job: any) => {
+        const expiryDate = new Date();
+        expiryDate.setDate(now.getDate() + (job.daysToExpiry || 20));
+        
+        return {
+          title: job.title,
+          titleHindi: job.titleHindi,
+          content: job.content,
+          contentHindi: job.contentHindi,
+          category: job.category || 'vacancy',
+          priority: job.priority || 'normal',
+          isActive: true,
+          applyLink: job.applyLink,
+          expiryDate: expiryDate
+        };
+      });
+    } catch (error) {
+      console.error('Error fetching AI-generated jobs:', error);
+      return [];
+    }
+  }
+
+  private async addStaticFreshAnnouncements(): Promise<void> {
     const today = new Date();
-    
-    // Calculate fresh dates
-    const nextWeek = new Date();
-    nextWeek.setDate(today.getDate() + 7);
-    
     const twoWeeksLater = new Date();
     twoWeeksLater.setDate(today.getDate() + 14);
     
     const nextMonth = new Date();
     nextMonth.setDate(today.getDate() + 30);
 
-    // Pool of fresh announcements to rotate
     const freshAnnouncements = [
       {
         title: "NDA & NA 2025 (I) - Applications Now Open",
@@ -863,7 +961,7 @@ export class DatabaseStorage implements IStorage {
         priority: "high",
         isActive: true,
         applyLink: "https://upsc.gov.in",
-        expiryDate: nextMonth
+        expiryDate: nextMonth.toISOString()
       },
       {
         title: "SBI PO 2025 Recruitment Notification",
@@ -874,35 +972,12 @@ export class DatabaseStorage implements IStorage {
         priority: "high",
         isActive: true,
         applyLink: "https://sbi.co.in/careers",
-        expiryDate: twoWeeksLater
-      },
-      {
-        title: "GATE 2026 Registration Started",
-        titleHindi: "GATE 2026 पंजीकरण शुरू",
-        content: "Graduate Aptitude Test in Engineering 2026 registration has begun. Apply for admission to M.Tech/PhD programs and PSU recruitments.",
-        contentHindi: "ग्रेजुएट एप्टीट्यूड टेस्ट इन इंजीनियरिंग 2026 का पंजीकरण शुरू हो गया है। M.Tech/PhD प्रोग्राम्स और PSU भर्तियों में प्रवेश के लिए आवेदन करें।",
-        category: "form",
-        priority: "normal",
-        isActive: true,
-        applyLink: "https://gate.iitkgp.ac.in",
-        expiryDate: nextMonth
-      },
-      {
-        title: "AIIMS Nursing Officer 2025 - 1000 Posts",
-        titleHindi: "AIIMS नर्सिंग ऑफिसर 2025 - 1000 पद",
-        content: "All India Institute of Medical Sciences has announced recruitment for 1000 Nursing Officer posts across various AIIMS centers. Apply now.",
-        contentHindi: "अखिल भारतीय आयुर्विज्ञान संस्थान ने विभिन्न AIIMS केंद्रों में 1000 नर्सिंग ऑफिसर पदों की भर्ती की घोषणा की है। अभी आवेदन करें।",
-        category: "vacancy",
-        priority: "normal",
-        isActive: true,
-        applyLink: "https://aiims.edu",
-        expiryDate: twoWeeksLater
+        expiryDate: twoWeeksLater.toISOString()
       }
     ];
 
-    // Add 2 fresh announcements
-    const randomAnnouncements = freshAnnouncements.slice(0, 2);
-    await db.insert(announcements).values(randomAnnouncements);
+    await db.insert(announcements).values(freshAnnouncements.slice(0, 2));
+    console.log('Added fallback static announcements');
   }
 }
 

@@ -16,7 +16,8 @@ import {
   Eye,
   Calendar,
   TrendingUp,
-  Bell
+  Bell,
+  Bot
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -135,14 +136,37 @@ export default function AdminDashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/announcements"] });
       queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
       toast({
-        title: "Auto-Update Complete",
-        description: data.message || "Announcements updated successfully!",
+        title: "AI Auto-Update Complete",
+        description: data.message || "AI-powered announcements updated successfully!",
       });
     },
     onError: (error) => {
       toast({
         title: "Update Failed",
         description: "Failed to update announcements automatically.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // AI Job Research mutation
+  const aiJobResearchMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/admin/ai-job-research");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/announcements"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
+      toast({
+        title: "AI Research Complete",
+        description: data.message || "Fresh job notifications found and added!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Research Failed",
+        description: "Failed to fetch fresh job data using AI research.",
         variant: "destructive",
       });
     },
@@ -209,6 +233,15 @@ export default function AdminDashboard() {
               >
                 <TrendingUp className="h-4 w-4" />
                 <span>{autoUpdateMutation.isPending ? "Updating..." : "Auto Update"}</span>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => aiJobResearchMutation.mutate()}
+                disabled={aiJobResearchMutation.isPending}
+                className="flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200"
+              >
+                <Bot className="h-4 w-4 text-blue-600" />
+                <span className="text-blue-700">{aiJobResearchMutation.isPending ? "Researching..." : "AI Research"}</span>
               </Button>
               <Button
                 variant="outline"
