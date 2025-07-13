@@ -178,7 +178,7 @@ Remember: You represent Mahech Internet Cafe's commitment to excellence. Every i
     return data.choices[0]?.message?.content || "माफ करें, मुझे समझने में कुछ समस्या हो रही है। कृपया अपना प्रश्न दोबारा पूछें।";
   } catch (error) {
     console.error('Groq API error:', error);
-    return "माफ करें, मुझे तकनीकी समस्या हो रही है। कृपया हमसे +91 98765 43210 पर संपर्क करें। Sorry, I'm having technical issues. Please contact us at +91 98765 43210.";
+    return "माफ करें, मुझे तकनीकी समस्या हो रही है। कृपया हमसे +91 9306003497 पर संपर्क करें। Sorry, I'm having technical issues. Please contact us at +91 9306003497.";
   }
 }
 
