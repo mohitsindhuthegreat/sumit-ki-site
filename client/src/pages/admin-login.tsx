@@ -167,13 +167,7 @@ export default function AdminLogin() {
             </Alert>
           )}
 
-          <div className="mt-6 text-center text-sm text-gray-500">
-            <p>Demo Credentials:</p>
-            <p className="font-mono bg-gray-100 p-2 rounded mt-2">
-              Username: sumit<br />
-              Password: 1
-            </p>
-          </div>
+
         </CardContent>
       </Card>
     </div>
