@@ -18,6 +18,9 @@ export default function HeroSection() {
   const showHeroVideo = getBooleanSetting('show_hero_video', true);
   const showEmergencyNotice = getBooleanSetting('show_emergency_notice', false);
   const emergencyMessage = getSetting('emergency_message', '');
+  const maintenanceMode = getBooleanSetting('maintenance_mode', false);
+  const showBanner = getBooleanSetting('show_banner', false);
+  const bannerText = getSetting('banner_text', '');
 
   return (
     <section className="relative py-20 px-4 bg-gradient-to-br from-blue-50 via-white to-green-50 overflow-hidden">
