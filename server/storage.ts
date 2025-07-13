@@ -885,4 +885,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async setSiteSetting(insertSetting: InsertSiteSetting): Promise<SiteSetting> {
-    const [setting] = await dbjson\n?|\n?
+    const [setting] = await db
+      .insert(siteSettings)
+      .values(insertSetting)
+      .onConflictDoUpdate({
+        target: siteSettings.key,
+        set: {
+          value: insertSetting.value,
+          description: insertSetting.description,
+          updatedAt: new Date()
+        }
+      })
+      .returning();
+    return setting;
