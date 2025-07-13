@@ -125,6 +125,29 @@ export default function AdminDashboard() {
     },
   });
 
+  // Auto-update announcements mutation
+  const autoUpdateMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/admin/auto-update-announcements");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/announcements"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
+      toast({
+        title: "Auto-Update Complete",
+        description: data.message || "Announcements updated successfully!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Update Failed",
+        description: "Failed to update announcements automatically.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -177,6 +200,15 @@ export default function AdminDashboard() {
               >
                 <Plus className="h-4 w-4" />
                 <span>New Announcement</span>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => autoUpdateMutation.mutate()}
+                disabled={autoUpdateMutation.isPending}
+                className="flex items-center space-x-2"
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span>{autoUpdateMutation.isPending ? "Updating..." : "Auto Update"}</span>
               </Button>
               <Button
                 variant="outline"

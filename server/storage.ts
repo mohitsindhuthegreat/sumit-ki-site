@@ -16,7 +16,7 @@ import {
   type InsertSiteSetting 
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, or, gt, isNull } from "drizzle-orm";
+import { eq, desc, and, or, gt, isNull, isNotNull, lt, sql } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -39,6 +39,9 @@ export interface IStorage {
   getSiteSetting(key: string): Promise<SiteSetting | undefined>;
   setSiteSetting(setting: InsertSiteSetting): Promise<SiteSetting>;
   getAllSiteSettings(): Promise<SiteSetting[]>;
+
+  // Auto-update system
+  autoUpdateExpiredAnnouncements(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -404,6 +407,61 @@ export class MemStorage implements IStorage {
   async getAllSiteSettings(): Promise<SiteSetting[]> {
     return Array.from(this.siteSettings.values());
   }
+
+  // Auto-update system for MemStorage
+  async autoUpdateExpiredAnnouncements(): Promise<void> {
+    const today = new Date();
+    
+    // Mark expired announcements as inactive
+    for (const [id, announcement] of this.announcements.entries()) {
+      if (announcement.expiryDate && announcement.expiryDate < today && announcement.isActive) {
+        this.announcements.set(id, { ...announcement, isActive: false });
+      }
+    }
+
+    // Check if we need fresh announcements
+    const activeCount = Array.from(this.announcements.values()).filter(a => a.isActive).length;
+    
+    if (activeCount < 4) {
+      this.addFreshAnnouncementsToMemory();
+    }
+  }
+
+  private addFreshAnnouncementsToMemory(): void {
+    const today = new Date();
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+    
+    const freshAnnouncements = [
+      {
+        title: "Fresh Government Job Alert - Auto Updated",
+        titleHindi: "ताजा सरकारी नौकरी अलर्ट - स्वतः अपडेट",
+        content: "New government job opportunities have been automatically updated based on latest notifications.",
+        contentHindi: "नवीनतम अधिसूचनाओं के आधार पर नए सरकारी नौकरी के अवसर स्वचालित रूप से अपडेट किए गए हैं।",
+        category: "vacancy",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://example.com",
+        expiryDate: nextWeek
+      }
+    ];
+
+    freshAnnouncements.forEach(ann => {
+      const id = this.currentAnnouncementId++;
+      const announcement: Announcement = {
+        ...ann,
+        id,
+        titleHindi: ann.titleHindi || null,
+        contentHindi: ann.contentHindi || null,
+        priority: ann.priority || "normal",
+        applyLink: ann.applyLink || null,
+        expiryDate: ann.expiryDate || null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      this.announcements.set(id, announcement);
+    });
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -512,75 +570,94 @@ export class DatabaseStorage implements IStorage {
   private async createSampleAnnouncements() {
     // Calculate dates for realistic sample data
     const today = new Date();
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 15);
-    const twoMonthsLater = new Date(today.getFullYear(), today.getMonth() + 2, 10);
-    const threeMonthsLater = new Date(today.getFullYear(), today.getMonth() + 3, 5);
+    
+    // Upcoming dates - for active forms/vacancies
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+    
+    const twoWeeksLater = new Date();
+    twoWeeksLater.setDate(today.getDate() + 14);
+    
+    const nextMonth = new Date();
+    nextMonth.setDate(today.getDate() + 30);
+    
+    const twoMonthsLater = new Date();
+    twoMonthsLater.setDate(today.getDate() + 60);
+    
+    // Past dates - for expired forms (these should not show up as active)
+    const lastWeek = new Date();
+    lastWeek.setDate(today.getDate() - 7);
+    
+    const lastMonth = new Date();
+    lastMonth.setDate(today.getDate() - 30);
 
+    // Auto-updating announcements with realistic dates
     const sampleAnnouncements = [
       {
-        title: "Latest Railway Job Notifications 2025",
-        titleHindi: "नवीनतम रेलवे नौकरी अधिसूचनाएं 2025",
-        content: "New railway job openings for various positions including ALP, Group D, Technician, and Officer posts. Apply now for government jobs with good salary packages and job security.",
-        contentHindi: "ALP, ग्रुप D, तकनीशियन और अधिकारी पदों सहित विभिन्न पदों के लिए नई रेलवे नौकरी के अवसर। अच्छे वेतन पैकेज और नौकरी की सुरक्षा के साथ सरकारी नौकरी के लिए आवेदन करें।",
+        title: "Railway RRB NTPC 2025 - New Recruitment Notification",
+        titleHindi: "रेलवे RRB NTPC 2025 - नई भर्ती अधिसूचना",
+        content: "Railway Recruitment Board has announced NTPC 2025 recruitment for 10,000+ posts including Station Master, Commercial Clerk, Traffic Assistant, and Goods Guard positions. Online application starts soon.",
+        contentHindi: "रेलवे भर्ती बोर्ड ने स्टेशन मास्टर, कमर्शियल क्लर्क, ट्रैफिक असिस्टेंट और गुड्स गार्ड पदों सहित 10,000+ पदों के लिए NTPC 2025 भर्ती की घोषणा की है। ऑनलाइन आवेदन जल्द शुरू होगा।",
         category: "vacancy",
         priority: "high",
         isActive: true,
         applyLink: "https://rrc.indianrailways.gov.in",
-        expiryDate: nextMonth
+        expiryDate: twoMonthsLater
       },
       {
-        title: "SSC CGL 2025 Application Form Available",
-        titleHindi: "SSC CGL 2025 आवेदन फॉर्म उपलब्ध",
-        content: "Staff Selection Commission Combined Graduate Level Examination 2025 application form is now available. Apply online for various Group B and Group C posts in government departments.",
-        contentHindi: "कर्मचारी चयन आयोग संयुक्त स्नातक स्तर परीक्षा 2025 का आवेदन फॉर्म अब उपलब्ध है। सरकारी विभागों में विभिन्न ग्रुप B और ग्रुप C पदों के लिए ऑनलाइन आवेदन करें।",
+        title: "SSC CHSL 2025 Application Form - Last 5 Days",
+        titleHindi: "SSC CHSL 2025 आवेदन फॉर्म - अंतिम 5 दिन",
+        content: "Staff Selection Commission CHSL 2025 application deadline approaching fast. Only 5 days left to apply for Lower Division Clerk, Data Entry Operator, and Postal Assistant posts.",
+        contentHindi: "कर्मचारी चयन आयोग CHSL 2025 आवेदन की अंतिम तारीख तेजी से आ रही है। लोअर डिवीजन क्लर्क, डेटा एंट्री ऑपरेटर और पोस्टल असिस्टेंट पदों के लिए आवेदन करने के लिए केवल 5 दिन बचे हैं।",
         category: "form",
         priority: "high",
         isActive: true,
         applyLink: "https://ssc.nic.in",
-        expiryDate: nextMonth
+        expiryDate: nextWeek
       },
       {
-        title: "Banking Recruitment 2025 - Multiple Banks",
-        titleHindi: "बैंकिंग भर्ती 2025 - अनेक बैंक",
-        content: "Various public sector banks have announced recruitment for Probationary Officer, Clerk, and Specialist Officer positions. Check eligibility and apply online.",
-        contentHindi: "विभिन्न सार्वजनिक क्षेत्र के बैंकों ने प्रोबेशनरी ऑफिसर, क्लर्क और स्पेशलिस्ट ऑफिसर पदों के लिए भर्ती की घोषणा की है। पात्रता जांचें और ऑनलाइन आवेदन करें।",
+        title: "IBPS Clerk 2025 Recruitment - 5000 Vacancies",
+        titleHindi: "IBPS क्लर्क 2025 भर्ती - 5000 रिक्तियां",
+        content: "Institute of Banking Personnel Selection has announced Clerk recruitment 2025 for various public sector banks. 5000+ vacancies available across India with good salary package.",
+        contentHindi: "बैंकिंग कार्मिक चयन संस्थान ने विभिन्न सार्वजनिक क्षेत्र के बैंकों के लिए क्लर्क भर्ती 2025 की घोषणा की है। अच्छे वेतन पैकेज के साथ पूरे भारत में 5000+ रिक्तियां उपलब्ध हैं।",
         category: "vacancy",
         priority: "normal",
         isActive: true,
         applyLink: "https://ibps.in",
-        expiryDate: twoMonthsLater
+        expiryDate: twoWeeksLater
       },
       {
-        title: "UPSC Civil Services Preliminary Exam 2025",
-        titleHindi: "UPSC सिविल सेवा प्रारंभिक परीक्षा 2025",
-        content: "Union Public Service Commission has announced Civil Services Examination 2025. Registration for IAS, IPS, IFS and other allied services is now open.",
-        contentHindi: "संघ लोक सेवा आयोग ने सिविल सेवा प्रारंभिक परीक्षा 2025 की घोषणा की है। IAS, IPS, IFS और अन्य संबद्ध सेवाओं के लिए पंजीकरण अब खुला है।",
+        title: "UPSC CSE 2025 Prelims Application Open",
+        titleHindi: "UPSC CSE 2025 प्रीलिम्स आवेदन खुला",
+        content: "Union Public Service Commission Civil Services Examination 2025 application is now open. Apply for IAS, IPS, IFS and 22 other central services. Last date to apply approaching.",
+        contentHindi: "संघ लोक सेवा आयोग सिविल सेवा परीक्षा 2025 का आवेदन अब खुला है। IAS, IPS, IFS और 22 अन्य केंद्रीय सेवाओं के लिए आवेदन करें। आवेदन की अंतिम तारीख नजदीक आ रही है।",
         category: "form",
         priority: "high",
         isActive: true,
         applyLink: "https://upsc.gov.in",
-        expiryDate: threeMonthsLater
+        expiryDate: nextMonth
       },
       {
-        title: "State Government Teacher Recruitment 2025",
-        titleHindi: "राज्य सरकार शिक्षक भर्ती 2025",
-        content: "Various state governments have announced teacher recruitment for primary, secondary and higher secondary schools. Apply for teaching positions with attractive salary packages.",
-        contentHindi: "विभिन्न राज्य सरकारों ने प्राथमिक, माध्यमिक और उच्च माध्यमिक स्कूलों के लिए शिक्षक भर्ती की घोषणा की है। आकर्षक वेतन पैकेज के साथ शिक्षण पदों के लिए आवेदन करें।",
+        title: "Delhi Police Constable 2025 - 25000 Posts",
+        titleHindi: "दिल्ली पुलिस कांस्टेबल 2025 - 25000 पद",
+        content: "Delhi Police has announced massive recruitment for 25,000 Constable posts. Physical fitness test, written exam, and medical examination to be conducted. Applications open now.",
+        contentHindi: "दिल्ली पुलिस ने 25,000 कांस्टेबल पदों के लिए बड़े पैमाने पर भर्ती की घोषणा की है। शारीरिक फिटनेस टेस्ट, लिखित परीक्षा और मेडिकल परीक्षा आयोजित की जाएगी। आवेदन अब खुले हैं।",
         category: "vacancy",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://delhipolice.nic.in",
+        expiryDate: twoWeeksLater
+      },
+      {
+        title: "Teaching Jobs Alert - Various States TET 2025",
+        titleHindi: "शिक्षक नौकरी अलर्ट - विभिन्न राज्य TET 2025",
+        content: "Multiple state governments have announced Teacher Eligibility Test 2025. Apply for primary and upper primary teacher positions with attractive salary and job security.",
+        contentHindi: "कई राज्य सरकारों ने शिक्षक पात्रता परीक्षा 2025 की घोषणा की है। आकर्षक वेतन और नौकरी की सुरक्षा के साथ प्राथमिक और उच्च प्राथमिक शिक्षक पदों के लिए आवेदन करें।",
+        category: "form",
         priority: "normal",
         isActive: true,
         applyLink: "https://education.gov.in",
-        expiryDate: twoMonthsLater
-      },
-      {
-        title: "Important Notice: Document Verification Updates",
-        titleHindi: "महत्वपूर्ण सूचना: दस्तावेज सत्यापन अपडेट",
-        content: "New guidelines for document verification process have been issued. All candidates must follow the updated procedure for government job applications.",
-        contentHindi: "दस्तावेज सत्यापन प्रक्रिया के लिए नई गाइडलाइन जारी की गई हैं। सभी उम्मीदवारों को सरकारी नौकरी के आवेदन के लिए अपडेटेड प्रक्रिया का पालन करना होगा।",
-        category: "notice",
-        priority: "normal",
-        isActive: true,
-        expiryDate: null // No expiry for notices
+        expiryDate: nextMonth
       }
     ];
 
@@ -720,6 +797,112 @@ export class DatabaseStorage implements IStorage {
 
   async getAllSiteSettings(): Promise<SiteSetting[]> {
     return await db.select().from(siteSettings);
+  }
+
+  // Auto-update system for announcements
+  async autoUpdateExpiredAnnouncements(): Promise<void> {
+    const today = new Date();
+    
+    // Get all expired announcements
+    const expiredAnnouncements = await db
+      .select()
+      .from(announcements)
+      .where(
+        and(
+          isNotNull(announcements.expiryDate),
+          lt(announcements.expiryDate, today)
+        )
+      );
+
+    // Mark expired announcements as inactive
+    if (expiredAnnouncements.length > 0) {
+      await db
+        .update(announcements)
+        .set({ isActive: false })
+        .where(
+          and(
+            isNotNull(announcements.expiryDate),
+            lt(announcements.expiryDate, today)
+          )
+        );
+    }
+
+    // Check if we need to add fresh announcements
+    const activeCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(announcements)
+      .where(eq(announcements.isActive, true));
+
+    // If we have less than 4 active announcements, add fresh ones
+    if (activeCount[0].count < 4) {
+      await this.addFreshAnnouncements();
+    }
+  }
+
+  private async addFreshAnnouncements(): Promise<void> {
+    const today = new Date();
+    
+    // Calculate fresh dates
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+    
+    const twoWeeksLater = new Date();
+    twoWeeksLater.setDate(today.getDate() + 14);
+    
+    const nextMonth = new Date();
+    nextMonth.setDate(today.getDate() + 30);
+
+    // Pool of fresh announcements to rotate
+    const freshAnnouncements = [
+      {
+        title: "NDA & NA 2025 (I) - Applications Now Open",
+        titleHindi: "NDA & NA 2025 (I) - आवेदन अब खुले",
+        content: "National Defence Academy and Naval Academy examination 2025 (I) applications are now open. Apply for a prestigious career in Indian Armed Forces.",
+        contentHindi: "राष्ट्रीय रक्षा अकादमी और नौसेना अकादमी परीक्षा 2025 (I) के आवेदन अब खुले हैं। भारतीय सशस्त्र बलों में प्रतिष्ठित करियर के लिए आवेदन करें।",
+        category: "form",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://upsc.gov.in",
+        expiryDate: nextMonth
+      },
+      {
+        title: "SBI PO 2025 Recruitment Notification",
+        titleHindi: "SBI PO 2025 भर्ती अधिसूचना",
+        content: "State Bank of India has announced Probationary Officer recruitment 2025. Apply for management trainee positions with excellent career growth opportunities.",
+        contentHindi: "भारतीय स्टेट बैंक ने प्रोबेशनरी ऑफिसर भर्ती 2025 की घोषणा की है। उत्कृष्ट करियर ग्रोथ के अवसरों के साथ मैनेजमेंट ट्रेनी पदों के लिए आवेदन करें।",
+        category: "vacancy",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://sbi.co.in/careers",
+        expiryDate: twoWeeksLater
+      },
+      {
+        title: "GATE 2026 Registration Started",
+        titleHindi: "GATE 2026 पंजीकरण शुरू",
+        content: "Graduate Aptitude Test in Engineering 2026 registration has begun. Apply for admission to M.Tech/PhD programs and PSU recruitments.",
+        contentHindi: "ग्रेजुएट एप्टीट्यूड टेस्ट इन इंजीनियरिंग 2026 का पंजीकरण शुरू हो गया है। M.Tech/PhD प्रोग्राम्स और PSU भर्तियों में प्रवेश के लिए आवेदन करें।",
+        category: "form",
+        priority: "normal",
+        isActive: true,
+        applyLink: "https://gate.iitkgp.ac.in",
+        expiryDate: nextMonth
+      },
+      {
+        title: "AIIMS Nursing Officer 2025 - 1000 Posts",
+        titleHindi: "AIIMS नर्सिंग ऑफिसर 2025 - 1000 पद",
+        content: "All India Institute of Medical Sciences has announced recruitment for 1000 Nursing Officer posts across various AIIMS centers. Apply now.",
+        contentHindi: "अखिल भारतीय आयुर्विज्ञान संस्थान ने विभिन्न AIIMS केंद्रों में 1000 नर्सिंग ऑफिसर पदों की भर्ती की घोषणा की है। अभी आवेदन करें।",
+        category: "vacancy",
+        priority: "normal",
+        isActive: true,
+        applyLink: "https://aiims.edu",
+        expiryDate: twoWeeksLater
+      }
+    ];
+
+    // Add 2 fresh announcements
+    const randomAnnouncements = freshAnnouncements.slice(0, 2);
+    await db.insert(announcements).values(randomAnnouncements);
   }
 }
 

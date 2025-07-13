@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { storage } from "./storage";
 
 const app = express();
 app.use(express.json());
@@ -36,8 +37,31 @@ app.use((req, res, next) => {
   next();
 });
 
+// Auto-update scheduler - runs every hour
+const setupAutoUpdateScheduler = () => {
+  const runAutoUpdate = async () => {
+    try {
+      await storage.autoUpdateExpiredAnnouncements();
+      log("Auto-update: Expired announcements updated successfully");
+    } catch (error) {
+      log(`Auto-update error: ${error}`);
+    }
+  };
+
+  // Run immediately on startup
+  runAutoUpdate();
+  
+  // Then run every hour (3600000 ms)
+  setInterval(runAutoUpdate, 3600000);
+  
+  log("Auto-update scheduler started - running every hour");
+};
+
 (async () => {
   const server = await registerRoutes(app);
+  
+  // Start the auto-update scheduler
+  setupAutoUpdateScheduler();
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

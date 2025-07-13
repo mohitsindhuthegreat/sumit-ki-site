@@ -427,15 +427,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Public: Get active announcements
+  // Public: Get active announcements (with auto-update)
   app.get("/api/announcements", async (req, res) => {
     try {
+      // Automatically update expired announcements before fetching
+      await storage.autoUpdateExpiredAnnouncements();
+      
       const announcements = await storage.getActiveAnnouncements();
       res.json(announcements);
     } catch (error) {
       res.status(500).json({ 
         success: false, 
         message: "Failed to fetch announcements" 
+      });
+    }
+  });
+
+  // Manual trigger for auto-update system
+  app.post("/api/admin/auto-update-announcements", async (req, res) => {
+    try {
+      await storage.autoUpdateExpiredAnnouncements();
+      res.json({ 
+        success: true, 
+        message: "Announcements updated successfully! Expired forms have been marked inactive and fresh content has been added." 
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to update announcements" 
       });
     }
   });
