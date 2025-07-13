@@ -28,7 +28,7 @@ export default function AnnouncementsSection() {
   const vacancyAnnouncements = announcements.filter(a => a.category === "vacancy").slice(0, 2);
   const formAnnouncements = announcements.filter(a => a.category === "form").slice(0, 2);
   const otherAnnouncements = announcements.filter(a => !["vacancy", "form"].includes(a.category)).slice(0, 2);
-  
+
   // Combine and show only the latest 6 announcements with priority to vacancy and forms
   const latestAnnouncements = [...vacancyAnnouncements, ...formAnnouncements, ...otherAnnouncements].slice(0, 6);
 
@@ -83,9 +83,18 @@ export default function AnnouncementsSection() {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-IN', {
       year: 'numeric',
-      month: 'short',
+      month: 'long',
       day: 'numeric'
     });
+  };
+
+  const getDaysRemaining = (expiryDate: string | Date | null) => {
+    if (!expiryDate) return null;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
   };
 
   if (isLoading) {
@@ -152,15 +161,23 @@ export default function AnnouncementsSection() {
                 <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-4">
                   {announcement.content}
                 </p>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                     {announcement.expiryDate && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span>Expires: {formatDate(announcement.expiryDate)}</span>
-                      </div>
-                    )}
+                          <div className={`flex items-center text-xs px-2 py-1 rounded ${
+                            getDaysRemaining(announcement.expiryDate) && getDaysRemaining(announcement.expiryDate)! <= 7
+                              ? 'text-red-700 bg-red-100 border border-red-200'
+                              : 'text-orange-700 bg-orange-100 border border-orange-200'
+                          }`}>
+                            <Clock className="h-3 w-3 mr-1" />
+                            {getDaysRemaining(announcement.expiryDate) && getDaysRemaining(announcement.expiryDate)! > 0 ? (
+                              `${getDaysRemaining(announcement.expiryDate)} days left`
+                            ) : (
+                              `Expires: ${formatDate(announcement.expiryDate)}`
+                            )}
+                          </div>
+                        )}
                   </div>
                   <div className="flex items-center gap-2">
                     <AnnouncementDialog announcement={announcement}>

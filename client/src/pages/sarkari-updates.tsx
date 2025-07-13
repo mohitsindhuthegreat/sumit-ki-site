@@ -108,6 +108,22 @@ export default function SarkariUpdates() {
     });
   };
 
+  const isExpired = (expiryDate: string | Date | null) => {
+    if (!expiryDate) return false;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    return expiry < today;
+  };
+
+  const getDaysRemaining = (expiryDate: string | Date | null) => {
+    if (!expiryDate) return null;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
       {/* Header */}
@@ -282,9 +298,20 @@ export default function SarkariUpdates() {
                         {formatDate(announcement.createdAt)}
                       </div>
                       {announcement.expiryDate && (
-                        <div className="flex items-center gap-1 text-red-600">
+                        <div className={`flex items-center gap-1 ${
+                          getDaysRemaining(announcement.expiryDate) && getDaysRemaining(announcement.expiryDate)! <= 7
+                            ? 'text-red-600 font-semibold'
+                            : 'text-orange-600'
+                        }`}>
                           <Clock className="h-4 w-4" />
-                          Expires: {formatDate(announcement.expiryDate)}
+                          {getDaysRemaining(announcement.expiryDate) && getDaysRemaining(announcement.expiryDate)! > 0 ? (
+                            <>
+                              {getDaysRemaining(announcement.expiryDate)} days left
+                              <span className="text-xs">({formatDate(announcement.expiryDate)})</span>
+                            </>
+                          ) : (
+                            `Expires: ${formatDate(announcement.expiryDate)}`
+                          )}
                         </div>
                       )}
                     </div>

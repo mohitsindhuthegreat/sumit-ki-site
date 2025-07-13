@@ -16,7 +16,7 @@ import {
   type InsertSiteSetting 
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gt } from "drizzle-orm";
+import { eq, desc, and, or, gt, isNull } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -27,14 +27,14 @@ export interface IStorage {
   createServiceRequest(request: InsertServiceRequest): Promise<ServiceRequest>;
   getServiceRequests(): Promise<ServiceRequest[]>;
   updateServiceRequestStatus(id: number, status: string): Promise<ServiceRequest | undefined>;
-  
+
   // Admin functionality
   createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
   getAnnouncements(): Promise<Announcement[]>;
   getActiveAnnouncements(): Promise<Announcement[]>;
   updateAnnouncement(id: number, announcement: Partial<InsertAnnouncement>): Promise<Announcement | undefined>;
   deleteAnnouncement(id: number): Promise<boolean>;
-  
+
   // Site settings
   getSiteSetting(key: string): Promise<SiteSetting | undefined>;
   setSiteSetting(setting: InsertSiteSetting): Promise<SiteSetting>;
@@ -64,10 +64,10 @@ export class MemStorage implements IStorage {
     this.currentRequestId = 1;
     this.currentAnnouncementId = 1;
     this.currentSettingId = 1;
-    
+
     // Create default admin user
     this.createDefaultAdmin();
-    
+
     // Initialize default contact settings
     this.initializeDefaultSettings();
   }
@@ -82,63 +82,83 @@ export class MemStorage implements IStorage {
       createdAt: new Date(),
     };
     this.users.set(adminUser.id, adminUser);
-    
+
     // Add sample announcements
     this.createSampleAnnouncements();
   }
 
   private createSampleAnnouncements() {
+    // Calculate dates for realistic sample data
+    const today = new Date();
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+    const twoMonthsLater = new Date(today.getFullYear(), today.getMonth() + 2, 10);
+    const threeMonthsLater = new Date(today.getFullYear(), today.getMonth() + 3, 5);
+
     const sampleAnnouncements = [
       {
-        title: "Latest Government Job Notifications 2025",
-        titleHindi: "नवीनतम सरकारी नौकरी अधिसूचनाएं 2025",
-        content: "New government job openings in Railway, Banking, SSC, and UPSC sectors. Apply now for various positions including clerk, officer, and technical roles with competitive packages.",
-        contentHindi: "रेलवे, बैंकिंग, SSC और UPSC क्षेत्रों में नई सरकारी नौकरी के अवसर। प्रतिस्पर्धी पैकेज के साथ क्लर्क, अधिकारी और तकनीकी भूमिकाओं के लिए आवेदन करें।",
+        title: "Latest Railway Job Notifications 2025",
+        titleHindi: "नवीनतम रेलवे नौकरी अधिसूचनाएं 2025",
+        content: "New railway job openings for various positions including ALP, Group D, Technician, and Officer posts. Apply now for government jobs with good salary packages and job security.",
+        contentHindi: "ALP, ग्रुप D, तकनीशियन और अधिकारी पदों सहित विभिन्न पदों के लिए नई रेलवे नौकरी के अवसर। अच्छे वेतन पैकेज और नौकरी की सुरक्षा के साथ सरकारी नौकरी के लिए आवेदन करें।",
         category: "vacancy",
         priority: "high",
         isActive: true,
-        applyLink: "https://ssc.nic.in/apply",
-        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        applyLink: "https://rrc.indianrailways.gov.in",
+        expiryDate: nextMonth
       },
       {
-        title: "Online Form Submission Service - New Features Added",
-        titleHindi: "ऑनलाइन फॉर्म सबमिशन सेवा - नई सुविधाएं जोड़ी गई",
-        content: "We've added new features to our online form submission service including auto-fill, document upload, and real-time status tracking. Visit our center for assistance.",
-        contentHindi: "हमने अपनी ऑनलाइन फॉर्म सबमिशन सेवा में नई सुविधाएं जोड़ी हैं जिसमें ऑटो-फिल, दस्तावेज अपलोड और रियल-टाइम स्टेटस ट्रैकिंग शामिल है।",
+        title: "SSC CGL 2025 Application Form Available",
+        titleHindi: "SSC CGL 2025 आवेदन फॉर्म उपलब्ध",
+        content: "Staff Selection Commission Combined Graduate Level Examination 2025 application form is now available. Apply online for various Group B and Group C posts in government departments.",
+        contentHindi: "कर्मचारी चयन आयोग संयुक्त स्नातक स्तर परीक्षा 2025 का आवेदन फॉर्म अब उपलब्ध है। सरकारी विभागों में विभिन्न ग्रुप B और ग्रुप C पदों के लिए ऑनलाइन आवेदन करें।",
         category: "form",
-        priority: "normal",
-        isActive: true,
-        expiryDate: null,
-      },
-      {
-        title: "Income Tax Return Filing - Last Date Extended",
-        titleHindi: "आयकर रिटर्न फाइलिंग - अंतिम तिथि बढ़ाई गई",
-        content: "The last date for filing Income Tax Returns has been extended to March 31st, 2025. Get professional help at our center with expert guidance and quick processing.",
-        contentHindi: "आयकर रिटर्न फाइलिंग की अंतिम तिथि 31 मार्च, 2025 तक बढ़ा दी गई है। विशेषज्ञ मार्गदर्शन और त्वरित प्रसंस्करण के साथ हमारे केंद्र पर पेशेवर सहायता प्राप्त करें।",
-        category: "notice",
         priority: "high",
         isActive: true,
-        expiryDate: new Date('2025-03-31'),
+        applyLink: "https://ssc.nic.in",
+        expiryDate: nextMonth
       },
       {
-        title: "Digital Banking Services Now Available",
-        titleHindi: "डिजिटल बैंकिंग सेवाएं अब उपलब्ध",
-        content: "We now offer comprehensive digital banking services including UPI payments, bank transfers, account opening assistance, and loan application support.",
-        contentHindi: "हम अब व्यापक डिजिटल बैंकिंग सेवाएं प्रदान करते हैं जिसमें UPI भुगतान, बैंक ट्रांसफर, खाता खोलने की सहायता और लोन आवेदन समर्थन शामिल है।",
-        category: "update",
+        title: "Banking Recruitment 2025 - Multiple Banks",
+        titleHindi: "बैंकिंग भर्ती 2025 - अनेक बैंक",
+        content: "Various public sector banks have announced recruitment for Probationary Officer, Clerk, and Specialist Officer positions. Check eligibility and apply online.",
+        contentHindi: "विभिन्न सार्वजनिक क्षेत्र के बैंकों ने प्रोबेशनरी ऑफिसर, क्लर्क और स्पेशलिस्ट ऑफिसर पदों के लिए भर्ती की घोषणा की है। पात्रता जांचें और ऑनलाइन आवेदन करें।",
+        category: "vacancy",
         priority: "normal",
         isActive: true,
-        expiryDate: null,
+        applyLink: "https://ibps.in",
+        expiryDate: twoMonthsLater
       },
       {
-        title: "Aadhaar Card Update Services - Special Discount",
-        titleHindi: "आधार कार्ड अपडेट सेवाएं - विशेष छूट",
-        content: "Get your Aadhaar card updated with latest information. Special discount of 20% on all Aadhaar services this month including name change, address update, and mobile number linking.",
-        contentHindi: "अपने आधार कार्ड को नवीनतम जानकारी के साथ अपडेट करवाएं। इस महीने सभी आधार सेवाओं पर 20% की विशेष छूट जिसमें नाम परिवर्तन, पता अपडेट और मोबाइल नंबर लिंकिंग शामिल है।",
-        category: "news",
+        title: "UPSC Civil Services Preliminary Exam 2025",
+        titleHindi: "UPSC सिविल सेवा प्रारंभिक परीक्षा 2025",
+        content: "Union Public Service Commission has announced Civil Services Examination 2025. Registration for IAS, IPS, IFS and other allied services is now open.",
+        contentHindi: "संघ लोक सेवा आयोग ने सिविल सेवा परीक्षा 2025 की घोषणा की है। IAS, IPS, IFS और अन्य संबद्ध सेवाओं के लिए पंजीकरण अब खुला है।",
+        category: "form",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://upsc.gov.in",
+        expiryDate: threeMonthsLater
+      },
+      {
+        title: "State Government Teacher Recruitment 2025",
+        titleHindi: "राज्य सरकार शिक्षक भर्ती 2025",
+        content: "Various state governments have announced teacher recruitment for primary, secondary and higher secondary schools. Apply for teaching positions with attractive salary packages.",
+        contentHindi: "विभिन्न राज्य सरकारों ने प्राथमिक, माध्यमिक और उच्च माध्यमिक स्कूलों के लिए शिक्षक भर्ती की घोषणा की है। आकर्षक वेतन पैकेज के साथ शिक्षण पदों के लिए आवेदन करें।",
+        category: "vacancy",
         priority: "normal",
         isActive: true,
-        expiryDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
+        applyLink: "https://education.gov.in",
+        expiryDate: twoMonthsLater
+      },
+      {
+        title: "Important Notice: Document Verification Updates",
+        titleHindi: "महत्वपूर्ण सूचना: दस्तावेज सत्यापन अपडेट",
+        content: "New guidelines for document verification process have been issued. All candidates must follow the updated procedure for government job applications.",
+        contentHindi: "दस्तावेज सत्यापन प्रक्रिया के लिए नई गाइडलाइन जारी की गई हैं। सभी उम्मीदवारों को सरकारी नौकरी के आवेदन के लिए अपडेटेड प्रक्रिया का पालन करना होगा।",
+        category: "notice",
+        priority: "normal",
+        isActive: true,
+        expiryDate: null // No expiry for notices
       }
     ];
 
@@ -320,7 +340,7 @@ export class MemStorage implements IStorage {
       titleHindi: insertAnnouncement.titleHindi || null,
       contentHindi: insertAnnouncement.contentHindi || null,
       priority: insertAnnouncement.priority || "normal",
-      isActive: insertAnnouncement.isActive !== undefined ? insertAnnouncement.isActive : true,
+      isActive: insertAnnouncement.isActive !== undefined ? announcement.isActive : true,
       applyLink: insertAnnouncement.applyLink || null,
       expiryDate: insertAnnouncement.expiryDate || null,
       createdAt: new Date(),
@@ -396,7 +416,7 @@ export class DatabaseStorage implements IStorage {
     try {
       // Check if admin user exists
       const adminUser = await db.select().from(users).where(eq(users.username, "sumit")).limit(1);
-      
+
       if (adminUser.length === 0) {
         // Create admin user
         await db.insert(users).values({
@@ -408,7 +428,7 @@ export class DatabaseStorage implements IStorage {
 
         // Create default site settings
         await this.createDefaultSettings();
-        
+
         // Create sample announcements
         await this.createSampleAnnouncements();
       }
@@ -490,6 +510,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   private async createSampleAnnouncements() {
+    // Calculate dates for realistic sample data
+    const today = new Date();
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+    const twoMonthsLater = new Date(today.getFullYear(), today.getMonth() + 2, 10);
+    const threeMonthsLater = new Date(today.getFullYear(), today.getMonth() + 3, 5);
+
     const sampleAnnouncements = [
       {
         title: "Latest Railway Job Notifications 2025",
@@ -499,62 +525,62 @@ export class DatabaseStorage implements IStorage {
         category: "vacancy",
         priority: "high",
         isActive: true,
-        applyLink: "https://rrc.indianrailways.gov.in/",
-        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        applyLink: "https://rrc.indianrailways.gov.in",
+        expiryDate: nextMonth
       },
       {
         title: "SSC CGL 2025 Application Form Available",
         titleHindi: "SSC CGL 2025 आवेदन फॉर्म उपलब्ध",
-        content: "SSC Combined Graduate Level (CGL) 2025 application form is now available online. Apply for various central government posts with competitive salary packages.",
-        contentHindi: "SSC संयुक्त स्नातक स्तर (CGL) 2025 आवेदन फॉर्म अब ऑनलाइन उपलब्ध है। प्रतिस्पर्धी वेतन पैकेज के साथ विभिन्न केंद्रीय सरकारी पदों के लिए आवेदन करें।",
+        content: "Staff Selection Commission Combined Graduate Level Examination 2025 application form is now available. Apply online for various Group B and Group C posts in government departments.",
+        contentHindi: "कर्मचारी चयन आयोग संयुक्त स्नातक स्तर परीक्षा 2025 का आवेदन फॉर्म अब उपलब्ध है। सरकारी विभागों में विभिन्न ग्रुप B और ग्रुप C पदों के लिए ऑनलाइन आवेदन करें।",
         category: "form",
         priority: "high",
         isActive: true,
-        applyLink: "https://ssc.nic.in/Portal/Apply",
-        expiryDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+        applyLink: "https://ssc.nic.in",
+        expiryDate: nextMonth
       },
       {
-        title: "Bank PO Recruitment 2025 - Multiple Banks",
-        titleHindi: "बैंक पीओ भर्ती 2025 - कई बैंक",
-        content: "Various public sector banks are recruiting for Probationary Officer (PO) positions. Great opportunity for graduates to start their banking career with excellent growth prospects.",
-        contentHindi: "विभिन्न सार्वजनिक क्षेत्र के बैंक प्रोबेशनरी ऑफिसर (PO) पदों के लिए भर्ती कर रहे हैं। स्नातकों के लिए बेहतरीन विकास संभावनाओं के साथ बैंकिंग करियर शुरू करने का शानदार अवसर।",
+        title: "Banking Recruitment 2025 - Multiple Banks",
+        titleHindi: "बैंकिंग भर्ती 2025 - अनेक बैंक",
+        content: "Various public sector banks have announced recruitment for Probationary Officer, Clerk, and Specialist Officer positions. Check eligibility and apply online.",
+        contentHindi: "विभिन्न सार्वजनिक क्षेत्र के बैंकों ने प्रोबेशनरी ऑफिसर, क्लर्क और स्पेशलिस्ट ऑफिसर पदों के लिए भर्ती की घोषणा की है। पात्रता जांचें और ऑनलाइन आवेदन करें।",
         category: "vacancy",
-        priority: "high",
+        priority: "normal",
         isActive: true,
-        applyLink: "https://ibps.in/",
-        expiryDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+        applyLink: "https://ibps.in",
+        expiryDate: twoMonthsLater
       },
       {
-        title: "UPSC Civil Services Prelims 2025 Notification",
-        titleHindi: "UPSC सिविल सेवा प्रारंभिक 2025 अधिसूचना",
-        content: "UPSC has released the notification for Civil Services Preliminary Examination 2025. This is the most prestigious examination for administrative services in India.",
-        contentHindi: "UPSC ने सिविल सेवा प्रारंभिक परीक्षा 2025 की अधिसूचना जारी की है। यह भारत में प्रशासनिक सेवाओं के लिए सबसे प्रतिष्ठित परीक्षा है।",
+        title: "UPSC Civil Services Preliminary Exam 2025",
+        titleHindi: "UPSC सिविल सेवा प्रारंभिक परीक्षा 2025",
+        content: "Union Public Service Commission has announced Civil Services Examination 2025. Registration for IAS, IPS, IFS and other allied services is now open.",
+        contentHindi: "संघ लोक सेवा आयोग ने सिविल सेवा प्रारंभिक परीक्षा 2025 की घोषणा की है। IAS, IPS, IFS और अन्य संबद्ध सेवाओं के लिए पंजीकरण अब खुला है।",
         category: "form",
         priority: "high",
         isActive: true,
-        applyLink: "https://upsc.gov.in/",
-        expiryDate: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000),
+        applyLink: "https://upsc.gov.in",
+        expiryDate: threeMonthsLater
       },
       {
         title: "State Government Teacher Recruitment 2025",
         titleHindi: "राज्य सरकार शिक्षक भर्ती 2025",
-        content: "Various state governments are recruiting for teaching positions from primary to secondary level. Good opportunity for B.Ed graduates to serve in education sector.",
-        contentHindi: "विभिन्न राज्य सरकारें प्राथमिक से माध्यमिक स्तर तक शिक्षक पदों के लिए भर्ती कर रही हैं। B.Ed स्नातकों के लिए शिक्षा क्षेत्र में सेवा करने का अच्छा अवसर।",
+        content: "Various state governments have announced teacher recruitment for primary, secondary and higher secondary schools. Apply for teaching positions with attractive salary packages.",
+        contentHindi: "विभिन्न राज्य सरकारों ने प्राथमिक, माध्यमिक और उच्च माध्यमिक स्कूलों के लिए शिक्षक भर्ती की घोषणा की है। आकर्षक वेतन पैकेज के साथ शिक्षण पदों के लिए आवेदन करें।",
         category: "vacancy",
         priority: "normal",
         isActive: true,
-        applyLink: "https://www.sarkariresult.com/",
-        expiryDate: new Date(Date.now() + 40 * 24 * 60 * 60 * 1000),
+        applyLink: "https://education.gov.in",
+        expiryDate: twoMonthsLater
       },
       {
-        title: "Digital India Services Now Available",
-        titleHindi: "डिजिटल इंडिया सेवाएं अब उपलब्ध",
-        content: "We now provide comprehensive Digital India services including e-governance applications, digital certificates, and online government form submissions with expert assistance.",
-        contentHindi: "हम अब व्यापक डिजिटल इंडिया सेवाएं प्रदान करते हैं जिसमें ई-गवर्नेंस एप्लिकेशन, डिजिटल प्रमाणपत्र और विशेषज्ञ सहायता के साथ ऑनलाइन सरकारी फॉर्म सबमिशन शामिल है।",
-        category: "update",
+        title: "Important Notice: Document Verification Updates",
+        titleHindi: "महत्वपूर्ण सूचना: दस्तावेज सत्यापन अपडेट",
+        content: "New guidelines for document verification process have been issued. All candidates must follow the updated procedure for government job applications.",
+        contentHindi: "दस्तावेज सत्यापन प्रक्रिया के लिए नई गाइडलाइन जारी की गई हैं। सभी उम्मीदवारों को सरकारी नौकरी के आवेदन के लिए अपडेटेड प्रक्रिया का पालन करना होगा।",
+        category: "notice",
         priority: "normal",
         isActive: true,
-        expiryDate: null,
+        expiryDate: null // No expiry for notices
       }
     ];
 
@@ -642,8 +668,10 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(announcements.isActive, true),
-          // Either no expiry date or expiry date is in the future
-          // Note: We need to handle null expiry dates properly
+          or(
+            isNull(announcements.expiryDate),
+            gt(announcements.expiryDate, now)
+          )
         )
       )
       .orderBy(desc(announcements.createdAt));
