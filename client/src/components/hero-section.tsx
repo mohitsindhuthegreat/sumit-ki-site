@@ -1,8 +1,7 @@
-import { PlayCircle, Phone, AlertTriangle } from "lucide-react";
+import { PlayCircle, Phone, AlertTriangle, MapPin, Clock, Star, Users, Award, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Phone, MapPin, Clock, Star, Users, Award, ArrowRight } from "lucide-react";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export default function HeroSection() {
