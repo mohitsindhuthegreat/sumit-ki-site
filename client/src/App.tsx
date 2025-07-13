@@ -8,6 +8,7 @@ import EnhancedLiveChat from "@/components/enhanced-live-chat";
 import PerformanceOptimizer from "@/components/performance-optimizer";
 import AdvancedAnalytics from "@/components/advanced-analytics";
 import AdvancedSEO from "@/components/advanced-seo";
+import EnhancedMetaTags from "@/components/enhanced-meta-tags";
 import Home from "@/pages/home";
 import About from "@/pages/about";
 import GovernmentServices from "@/pages/government-services";
@@ -57,6 +58,7 @@ function App() {
         <PerformanceOptimizer />
         <AdvancedAnalytics />
         <AdvancedSEO />
+        <EnhancedMetaTags />
         <Toaster />
         <Router />
         <WhatsAppButton />

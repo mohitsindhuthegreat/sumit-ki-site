@@ -1,0 +1,120 @@
+{
+  "name": "Mahech Internet Cafe - Digital Solution Hub",
+  "short_name": "Mahech Cafe",
+  "description": "Complete digital solution hub offering government services, banking, printing, travel booking, and computer training in Dang Kalan, Punjab.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e40af",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "categories": ["business", "education", "government", "travel"],
+  "lang": "en-IN",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "type": "image/svg+xml", 
+      "sizes": "16x16",
+      "purpose": "favicon"
+    },
+    {
+      "src": "/favicon.ico",
+      "type": "image/svg+xml",
+      "sizes": "32x32",
+      "purpose": "favicon"
+    },
+    {
+      "src": "/favicon.ico",
+      "type": "image/svg+xml",
+      "sizes": "48x48",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "type": "image/svg+xml",
+      "sizes": "144x144",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "type": "image/png",
+      "sizes": "1200x630",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Government Services",
+      "short_name": "Gov Services",
+      "description": "Access government ID services",
+      "url": "/government-services",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "type": "image/svg+xml",
+          "sizes": "48x48"
+        }
+      ]
+    },
+    {
+      "name": "Banking Services", 
+      "short_name": "Banking",
+      "description": "Banking and bill payment services",
+      "url": "/banking-services",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "type": "image/svg+xml",
+          "sizes": "48x48"
+        }
+      ]
+    },
+    {
+      "name": "Sarkari Updates",
+      "short_name": "Jobs",
+      "description": "Latest government job notifications",
+      "url": "/sarkari-updates",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "type": "image/svg+xml",
+          "sizes": "48x48"
+        }
+      ]
+    },
+    {
+      "name": "Contact Us",
+      "short_name": "Contact",
+      "description": "Get in touch with us",
+      "url": "/contact",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "type": "image/svg+xml",
+          "sizes": "48x48"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
