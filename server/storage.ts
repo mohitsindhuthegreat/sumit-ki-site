@@ -212,43 +212,148 @@ export class MemStorage implements IStorage {
       },
       {
         key: "contact_address",
-        value: "Shop No. 123, Main Market\nNear City Center Mall\nNew Delhi - 110001",
+        value: "Mahech Internet Cafe, Near Bus Stand, Main Market Area",
         description: "Business address"
       },
       {
         key: "contact_address_hindi",
-        value: "दुकान नंबर 123, मुख्य बाजार\nसिटी सेंटर मॉल के पास\nनई दिल्ली - 110001",
+        value: "महेच इंटरनेट कैफे, बस स्टैंड के पास, मुख्य बाजार क्षेत्र",
         description: "Business address in Hindi"
       },
       {
         key: "business_hours",
-        value: "Monday - Sunday: 8:00 AM - 11:00 PM",
+        value: "Open Daily 8 AM - 10 PM",
         description: "Business operating hours"
       },
       {
         key: "business_hours_hindi",
-        value: "सोमवार - रविवार: सुबह 8:00 - रात 11:00",
-        description: "Business operating hours in Hindi"
+        value: "प्रतिदिन खुला सुबह 8 से रात 10 बजे तक",
+        description: "Business hours in Hindi"
+      },
+      {
+        key: "business_name",
+        value: "Mahech Internet Cafe",
+        description: "Official business name"
       },
       {
         key: "site_title",
-        value: "Mahech Internet Cafe",
+        value: "Mahech Internet Cafe - Complete Digital Solutions",
         description: "Website title"
       },
       {
         key: "site_title_hindi",
-        value: "महेच इंटरनेट कैफे",
+        value: "महेच इंटरनेट कैफे - संपूर्ण डिजिटल समाधान",
         description: "Website title in Hindi"
       },
       {
-        key: "site_description",
-        value: "Complete digital solution hub for government services, banking, and more",
-        description: "Website description"
+        key: "hero_headline",
+        value: "Your Complete Digital Solution Hub",
+        description: "Main headline on homepage"
       },
       {
-        key: "site_description_hindi",
-        value: "सरकारी सेवाओं, बैंकिंग और अधिक के लिए संपूर्ण डिजिटल समाधान केंद्र",
-        description: "Website description in Hindi"
+        key: "hero_description",
+        value: "Government services, banking, travel booking, computer training, printing, and comprehensive digital solutions - all under one roof with expert assistance",
+        description: "Hero section description"
+      },
+      {
+        key: "show_hero_video",
+        value: "true",
+        description: "Show video button in hero section"
+      },
+      {
+        key: "show_emergency_notice",
+        value: "false",
+        description: "Show emergency notice banner"
+      },
+      {
+        key: "emergency_message",
+        value: "",
+        description: "Emergency notice message"
+      },
+      {
+        key: "printing_bw_rate",
+        value: "2",
+        description: "Black & White printing rate per page"
+      },
+      {
+        key: "printing_color_rate",
+        value: "10",
+        description: "Color printing rate per page"
+      },
+      {
+        key: "photocopying_rate",
+        value: "1",
+        description: "Photocopying rate per page"
+      },
+      {
+        key: "lamination_rate",
+        value: "15",
+        description: "Lamination rate per page"
+      },
+      {
+        key: "passport_photo_rate",
+        value: "40",
+        description: "Passport photo rate per set"
+      },
+      {
+        key: "computer_training_fee",
+        value: "500",
+        description: "Computer training fee per month"
+      },
+      {
+        key: "internet_hourly_rate",
+        value: "20",
+        description: "Internet usage rate per hour"
+      },
+      {
+        key: "aadhaar_service_fee",
+        value: "30",
+        description: "Aadhaar related service fee"
+      },
+      {
+        key: "pan_card_fee",
+        value: "110",
+        description: "PAN card service fee"
+      },
+      {
+        key: "form_filling_fee",
+        value: "50",
+        description: "Government form filling fee"
+      },
+      {
+        key: "maintenance_mode",
+        value: "false",
+        description: "Website maintenance mode"
+      },
+      {
+        key: "chat_enabled",
+        value: "true",
+        description: "Enable chat widget"
+      },
+      {
+        key: "newsletter_enabled",
+        value: "true",
+        description: "Enable newsletter signup"
+      },
+      {
+        key: "facebook_url",
+        value: "",
+        description: "Facebook page URL"
+      },
+      {
+        key: "instagram_url",
+        value: "",
+        description: "Instagram profile URL"
+      },
+      {
+        key: "youtube_url",
+        value: "",
+        description: "YouTube channel URL"
+      },
+      {
+        key: "telegram_channel",
+        value: "",
+        description: "Telegram channel link"
       }
     ];
 
@@ -411,7 +516,7 @@ export class MemStorage implements IStorage {
   // Auto-update system for MemStorage
   async autoUpdateExpiredAnnouncements(): Promise<void> {
     const today = new Date();
-    
+
     // Mark expired announcements as inactive
     for (const [id, announcement] of this.announcements.entries()) {
       if (announcement.expiryDate && announcement.expiryDate < today && announcement.isActive) {
@@ -421,7 +526,7 @@ export class MemStorage implements IStorage {
 
     // Check if we need fresh announcements
     const activeCount = Array.from(this.announcements.values()).filter(a => a.isActive).length;
-    
+
     if (activeCount < 4) {
       this.addFreshAnnouncementsToMemory();
     }
@@ -431,7 +536,7 @@ export class MemStorage implements IStorage {
     const today = new Date();
     const nextWeek = new Date();
     nextWeek.setDate(today.getDate() + 7);
-    
+
     const freshAnnouncements = [
       {
         title: "Fresh Government Job Alert - Auto Updated",
@@ -570,24 +675,24 @@ export class DatabaseStorage implements IStorage {
   private async createSampleAnnouncements() {
     // Calculate dates for realistic sample data
     const today = new Date();
-    
+
     // Upcoming dates - for active forms/vacancies
     const nextWeek = new Date();
     nextWeek.setDate(today.getDate() + 7);
-    
+
     const twoWeeksLater = new Date();
     twoWeeksLater.setDate(today.getDate() + 14);
-    
+
     const nextMonth = new Date();
     nextMonth.setDate(today.getDate() + 30);
-    
+
     const twoMonthsLater = new Date();
     twoMonthsLater.setDate(today.getDate() + 60);
-    
+
     // Past dates - for expired forms (these should not show up as active)
     const lastWeek = new Date();
     lastWeek.setDate(today.getDate() - 7);
-    
+
     const lastMonth = new Date();
     lastMonth.setDate(today.getDate() - 30);
 
@@ -780,205 +885,4 @@ export class DatabaseStorage implements IStorage {
   }
 
   async setSiteSetting(insertSetting: InsertSiteSetting): Promise<SiteSetting> {
-    const [setting] = await db
-      .insert(siteSettings)
-      .values(insertSetting)
-      .onConflictDoUpdate({
-        target: siteSettings.key,
-        set: {
-          value: insertSetting.value,
-          description: insertSetting.description,
-          updatedAt: new Date()
-        }
-      })
-      .returning();
-    return setting;
-  }
-
-  async getAllSiteSettings(): Promise<SiteSetting[]> {
-    return await db.select().from(siteSettings);
-  }
-
-  // Auto-update system for announcements
-  async autoUpdateExpiredAnnouncements(): Promise<void> {
-    const today = new Date();
-    
-    // Get all expired announcements
-    const expiredAnnouncements = await db
-      .select()
-      .from(announcements)
-      .where(
-        and(
-          isNotNull(announcements.expiryDate),
-          lt(announcements.expiryDate, today)
-        )
-      );
-
-    // Mark expired announcements as inactive
-    if (expiredAnnouncements.length > 0) {
-      await db
-        .update(announcements)
-        .set({ isActive: false })
-        .where(
-          and(
-            isNotNull(announcements.expiryDate),
-            lt(announcements.expiryDate, today)
-          )
-        );
-    }
-
-    // Check if we need to add fresh announcements
-    const activeCount = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(announcements)
-      .where(eq(announcements.isActive, true));
-
-    // If we have less than 4 active announcements, add fresh ones
-    if (activeCount[0].count < 4) {
-      await this.addFreshAnnouncements();
-    }
-  }
-
-  private async addFreshAnnouncements(): Promise<void> {
-    try {
-      // Try to fetch AI-generated content first
-      const aiJobs = await this.getAIGeneratedJobs();
-      
-      if (aiJobs.length > 0) {
-        // Add AI-generated fresh announcements
-        const jobsToAdd = aiJobs.slice(0, 3); // Add up to 3 fresh announcements
-        await db.insert(announcements).values(jobsToAdd);
-        console.log(`Added ${jobsToAdd.length} AI-generated job announcements`);
-      } else {
-        // Fallback to static content if AI fails
-        await this.addStaticFreshAnnouncements();
-      }
-    } catch (error) {
-      console.error('Error adding AI-generated jobs, using fallback:', error);
-      await this.addStaticFreshAnnouncements();
-    }
-  }
-
-  private async getAIGeneratedJobs(): Promise<any[]> {
-    try {
-      const currentDate = new Date().toISOString().split('T')[0];
-      
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.GROQ_API_KEY || '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'}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'llama3-70b-8192',
-          messages: [
-            {
-              role: 'system',
-              content: `You are an expert government job research assistant for Indian government notifications. Generate realistic and current Indian government job notifications and form deadlines for ${currentDate}. 
-
-IMPORTANT: Return ONLY a valid JSON array of 3 objects, no other text or formatting. Each object must have this exact structure:
-[
-  {
-    "title": "Job/Form Title in English",
-    "titleHindi": "Job/Form Title in Hindi",
-    "content": "Detailed description in English (50-100 words)",
-    "contentHindi": "Detailed description in Hindi (50-100 words)",
-    "category": "vacancy",
-    "priority": "high",
-    "applyLink": "https://official-website.com",
-    "daysToExpiry": 15
-  }
-]
-
-Focus on: SSC, Railway, Banking, UPSC, State Government, Teaching, Police, and other popular Indian government opportunities. Make content realistic and current with proper official websites.`
-            },
-            {
-              role: 'user',
-              content: `Generate 3 fresh government job/form notifications for today ${currentDate}. Include mix of:
-- 1 urgent form (7-15 days remaining)
-- 1 job vacancy (15-30 days remaining) 
-- 1 regular update (20-45 days remaining)
-
-Focus on current popular categories like SSC CGL/CHSL, Railway RRB, Banking IBPS/SBI, UPSC CSE, State PSC, Teaching TET/CTET, and Police SI/Constable recruitment.`
-            }
-          ],
-          max_tokens: 1500,
-          temperature: 0.8,
-          top_p: 0.9,
-          stream: false
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Groq API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const aiResponse = data.choices[0]?.message?.content || '[]';
-      
-      // Clean response and parse
-      const cleanResponse = aiResponse.replace(/```json\n?|\n?```/g, '').trim();
-      const jobs = JSON.parse(cleanResponse);
-      const now = new Date();
-      
-      return jobs.map((job: any) => {
-        const expiryDate = new Date();
-        expiryDate.setDate(now.getDate() + (job.daysToExpiry || 20));
-        
-        return {
-          title: job.title,
-          titleHindi: job.titleHindi,
-          content: job.content,
-          contentHindi: job.contentHindi,
-          category: job.category || 'vacancy',
-          priority: job.priority || 'normal',
-          isActive: true,
-          applyLink: job.applyLink,
-          expiryDate: expiryDate
-        };
-      });
-    } catch (error) {
-      console.error('Error fetching AI-generated jobs:', error);
-      return [];
-    }
-  }
-
-  private async addStaticFreshAnnouncements(): Promise<void> {
-    const today = new Date();
-    const twoWeeksLater = new Date();
-    twoWeeksLater.setDate(today.getDate() + 14);
-    
-    const nextMonth = new Date();
-    nextMonth.setDate(today.getDate() + 30);
-
-    const freshAnnouncements = [
-      {
-        title: "NDA & NA 2025 (I) - Applications Now Open",
-        titleHindi: "NDA & NA 2025 (I) - आवेदन अब खुले",
-        content: "National Defence Academy and Naval Academy examination 2025 (I) applications are now open. Apply for a prestigious career in Indian Armed Forces.",
-        contentHindi: "राष्ट्रीय रक्षा अकादमी और नौसेना अकादमी परीक्षा 2025 (I) के आवेदन अब खुले हैं। भारतीय सशस्त्र बलों में प्रतिष्ठित करियर के लिए आवेदन करें।",
-        category: "form",
-        priority: "high",
-        isActive: true,
-        applyLink: "https://upsc.gov.in",
-        expiryDate: nextMonth.toISOString()
-      },
-      {
-        title: "SBI PO 2025 Recruitment Notification",
-        titleHindi: "SBI PO 2025 भर्ती अधिसूचना",
-        content: "State Bank of India has announced Probationary Officer recruitment 2025. Apply for management trainee positions with excellent career growth opportunities.",
-        contentHindi: "भारतीय स्टेट बैंक ने प्रोबेशनरी ऑफिसर भर्ती 2025 की घोषणा की है। उत्कृष्ट करियर ग्रोथ के अवसरों के साथ मैनेजमेंट ट्रेनी पदों के लिए आवेदन करें।",
-        category: "vacancy",
-        priority: "high",
-        isActive: true,
-        applyLink: "https://sbi.co.in/careers",
-        expiryDate: twoWeeksLater.toISOString()
-      }
-    ];
-
-    await db.insert(announcements).values(freshAnnouncements.slice(0, 2));
-    console.log('Added fallback static announcements');
-  }
-}
-
-export const storage = new DatabaseStorage();
+    const [setting] = await dbjson\n?|\n?

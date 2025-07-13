@@ -110,7 +110,7 @@ export default function ContactSection() {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <Label className="block text-sm font-medium text-gray-700 mb-2">
                     Email *
@@ -124,7 +124,7 @@ export default function ContactSection() {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <Label className="block text-sm font-medium text-gray-700 mb-2">
                     Phone / फोन *
@@ -138,7 +138,7 @@ export default function ContactSection() {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <Label className="block text-sm font-medium text-gray-700 mb-2">
                     Message / संदेश *
@@ -152,7 +152,7 @@ export default function ContactSection() {
                     required
                   />
                 </div>
-                
+
                 <Button 
                   type="submit" 
                   className="w-full bg-brand-blue hover:bg-brand-navy text-white py-3 font-semibold"
@@ -169,7 +169,7 @@ export default function ContactSection() {
           <div className="space-y-8">
             <div>
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h3>
-              
+
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-brand-blue rounded-full flex items-center justify-center flex-shrink-0">

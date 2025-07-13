@@ -6,26 +6,25 @@ import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export default function HeroSection() {
   const { getSetting, getBooleanSetting } = useSiteSettings();
-  const showBanner = getBooleanSetting("show_banner", false);
-  const bannerText = getSetting("banner_text", "Welcome to Mahech Internet Cafe!");
-  const maintenanceMode = getBooleanSetting("maintenance_mode", false);
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  // Get dynamic values from settings
+  const siteTitle = getSetting('site_title', 'Mahech Internet Cafe');
+  const siteTitleHindi = getSetting('site_title_hindi', 'महेच इंटरनेट कैफे');
+  const heroHeadline = getSetting('hero_headline', 'Your Complete Digital Solution Hub');
+  const heroDescription = getSetting('hero_description', 'Government services, banking, travel booking, and more - all under one roof');
+  const mainPhone = getSetting('contact_phone', '+91 9306003497');
+  const whatsappNumber = getSetting('contact_whatsapp', '+91 9306003497');
+  const businessHours = getSetting('business_hours', 'Open Daily 8 AM - 10 PM');
+  const showHeroVideo = getBooleanSetting('show_hero_video', true);
+  const showEmergencyNotice = getBooleanSetting('show_emergency_notice', false);
+  const emergencyMessage = getSetting('emergency_message', '');
 
   return (
-    <section id="home" className="relative bg-gradient-to-br from-brand-blue to-brand-navy text-white py-20">
-      <div className="absolute inset-0 bg-black opacity-40"></div>
-      <div 
-        className="absolute inset-0 bg-cover bg-center" 
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080')"
-        }}
-      ></div>
+    <section className="relative py-20 px-4 bg-gradient-to-br from-blue-50 via-white to-green-50 overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM5ODk4OTgiIGZpbGwtb3BhY2l0eT0iMC4xIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIzIi8+PC9nPjwvZz48L3N2Zz4=')] bg-repeat"></div>
+      </div>
 
       {/* Maintenance Mode Banner */}
       {maintenanceMode && (

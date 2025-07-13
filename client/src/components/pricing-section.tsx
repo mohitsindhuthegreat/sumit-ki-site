@@ -1,6 +1,7 @@
 import { Wifi, Printer, Gamepad2, Wrench, Percent } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 const pricingCategories = [
   {
@@ -55,6 +56,19 @@ const pricingCategories = [
 ];
 
 export default function PricingSection() {
+  const { getSetting, getNumberSetting } = useSiteSettings();
+
+  // Get dynamic pricing
+  const printingBWRate = getNumberSetting('printing_bw_rate', 2);
+  const printingColorRate = getNumberSetting('printing_color_rate', 10);
+  const photocopyingRate = getNumberSetting('photocopying_rate', 1);
+  const laminationRate = getNumberSetting('lamination_rate', 15);
+  const passportPhotoRate = getNumberSetting('passport_photo_rate', 40);
+  const computerTrainingFee = getNumberSetting('computer_training_fee', 500);
+  const internetHourlyRate = getNumberSetting('internet_hourly_rate', 20);
+  const aadhaarServiceFee = getNumberSetting('aadhaar_service_fee', 30);
+  const panCardFee = getNumberSetting('pan_card_fee', 110);
+  const formFillingFee = getNumberSetting('form_filling_fee', 50);
   return (
     <section id="pricing" className="py-20 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,13 +97,13 @@ export default function PricingSection() {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="text-center mb-6">
                   <category.icon className={`${category.color} mb-4 mx-auto`} size={48} />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">{category.title}</h3>
                   <p className="text-gray-600">{category.description}</p>
                 </div>
-                
+
                 <div className="space-y-3 text-center">
                   {category.pricing.map((item, priceIndex) => (
                     <div 
