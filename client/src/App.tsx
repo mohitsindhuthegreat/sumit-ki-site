@@ -7,6 +7,7 @@ import WhatsAppButton from "@/components/whatsapp-button";
 import EnhancedLiveChat from "@/components/enhanced-live-chat";
 import PerformanceOptimizer from "@/components/performance-optimizer";
 import AdvancedAnalytics from "@/components/advanced-analytics";
+import AdvancedSEO from "@/components/advanced-seo";
 import Home from "@/pages/home";
 import About from "@/pages/about";
 import GovernmentServices from "@/pages/government-services";
@@ -55,6 +56,7 @@ function App() {
       <TooltipProvider>
         <PerformanceOptimizer />
         <AdvancedAnalytics />
+        <AdvancedSEO />
         <Toaster />
         <Router />
         <WhatsAppButton />
