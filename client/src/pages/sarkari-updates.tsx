@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import Navigation from "@/components/navigation";
+import Footer from "@/components/footer";
+import SEOHead from "@/components/seo-head";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -125,7 +128,16 @@ export default function SarkariUpdates() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+    <>
+      <SEOHead 
+        title="Latest Sarkari Updates 2025 | Government Jobs, Forms, Results | Mahech Internet Cafe"
+        description="Latest government job notifications, application forms, admit cards, results 2025. SSC, Railway, Banking, UPSC, State Government jobs. Auto-updated daily. सरकारी नौकरी अपडेट, भर्ती सूचना, परीक्षा परिणाम। Call +91 9306003497"
+        keywords="sarkari naukri 2025, government jobs Punjab, SSC jobs, railway recruitment, banking jobs, UPSC notification, state government jobs, admit card download, exam results, government exam forms, सरकारी नौकरी 2025, भर्ती अधिसूचना, परीक्षा परिणाम"
+        canonicalUrl="https://mahech-internet-cafe.replit.app/sarkari-updates"
+      />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+        <Navigation />
+        <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
       {/* Header */}
       <div className="bg-gradient-to-r from-brand-blue to-brand-cyan text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -407,6 +419,9 @@ export default function SarkariUpdates() {
           </div>
         </div>
       </div>
-    </div>
+        </main>
+        <Footer />
+      </div>
+    </>
   );
 }

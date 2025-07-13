@@ -677,6 +677,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SEO Routes
+  // Generate XML sitemap
+  app.get("/sitemap.xml", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    
+    const pages = [
+      { url: '/', priority: '1.0', changefreq: 'daily', lastmod: new Date().toISOString().split('T')[0] },
+      { url: '/about', priority: '0.8', changefreq: 'monthly', lastmod: '2025-01-13' },
+      { url: '/government-services', priority: '0.9', changefreq: 'weekly', lastmod: '2025-01-13' },
+      { url: '/banking-services', priority: '0.9', changefreq: 'weekly', lastmod: '2025-01-13' },
+      { url: '/printing-services', priority: '0.9', changefreq: 'weekly', lastmod: '2025-01-13' },
+      { url: '/online-forms', priority: '0.9', changefreq: 'weekly', lastmod: '2025-01-13' },
+      { url: '/travel-services', priority: '0.9', changefreq: 'weekly', lastmod: '2025-01-13' },
+      { url: '/contact', priority: '0.8', changefreq: 'monthly', lastmod: '2025-01-13' },
+      { url: '/sarkari-updates', priority: '1.0', changefreq: 'daily', lastmod: new Date().toISOString().split('T')[0] },
+      { url: '/privacy-policy', priority: '0.3', changefreq: 'yearly', lastmod: '2025-01-13' },
+      { url: '/terms-conditions', priority: '0.3', changefreq: 'yearly', lastmod: '2025-01-13' }
+    ];
+
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.map(page => `  <url>
+    <loc>${baseUrl}${page.url}</loc>
+    <lastmod>${page.lastmod}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+    res.set('Content-Type', 'application/xml');
+    res.send(sitemap);
+  });
+
+  // Generate robots.txt
+  app.get("/robots.txt", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    
+    const robots = `User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Crawl-delay: 1
+
+Sitemap: ${baseUrl}/sitemap.xml`;
+
+    res.set('Content-Type', 'text/plain');
+    res.send(robots);
+  });
+
+  // Generate structured data for home page
+  app.get("/api/structured-data", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Mahech Internet Cafe",
+      "alternateName": "महेच इंटरनेट कैफे",
+      "description": "Complete digital solution hub in Dang Kalan. Expert services for Aadhaar, PAN, Voter ID, banking, bill payments, money transfer, printing, travel booking, computer training.",
+      "url": baseUrl,
+      "telephone": "+91 9306003497",
+      "email": "sumit03497@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "VPO DANG KALAN NEAR BAWEJA MART",
+        "addressLocality": "Dang Kalan",
+        "addressRegion": "Punjab",
+        "postalCode": "144801",
+        "addressCountry": "IN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 31.2204,
+        "longitude": 75.7644
+      },
+      "openingHours": "Mo-Su 08:00-23:00",
+      "priceRange": "₹",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "150"
+      }
+    };
+
+    res.json(structuredData);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
