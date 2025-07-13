@@ -1,7 +1,16 @@
-import { PlayCircle, Phone } from "lucide-react";
+import { PlayCircle, Phone, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Phone, MapPin, Clock, Star, Users, Award, ArrowRight } from "lucide-react";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export default function HeroSection() {
+  const { getSetting, getBooleanSetting } = useSiteSettings();
+  const showBanner = getBooleanSetting("show_banner", false);
+  const bannerText = getSetting("banner_text", "Welcome to Mahech Internet Cafe!");
+  const maintenanceMode = getBooleanSetting("maintenance_mode", false);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -18,7 +27,25 @@ export default function HeroSection() {
           backgroundImage: "url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080')"
         }}
       ></div>
-      
+
+      {/* Maintenance Mode Banner */}
+      {maintenanceMode && (
+        <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-600 to-orange-600 text-white text-center py-3 z-20">
+          <div className="flex items-center justify-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            <p className="font-semibold">⚠️ Maintenance Mode Active - सर्वर रखरखाव चल रहा है</p>
+            <AlertTriangle className="h-5 w-5" />
+          </div>
+        </div>
+      )}
+
+      {/* Custom Banner */}
+      {showBanner && !maintenanceMode && (
+        <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-center py-2 z-10">
+          <p className="font-medium">{bannerText}</p>
+        </div>
+      )}
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-5xl md:text-6xl font-bold mb-6">
           Your Complete <span className="text-brand-cyan">Online Solution</span> Hub
