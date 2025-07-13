@@ -107,3 +107,23 @@
 .hover\:text-brand-cyan:hover {
   color: hsl(188, 94%, 43%);
 }
+
+/* Animation delays */
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Custom gradient text */
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Enhanced glassmorphism */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
