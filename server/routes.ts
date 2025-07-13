@@ -694,6 +694,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Google Site Verification
+  app.get("/googledbb31191f1908500.html", (req, res) => {
+    res.set('Content-Type', 'text/html');
+    res.send('google-site-verification: googledbb31191f1908500.html');
+  });
+
+  // Advanced SEO endpoints for better Google indexing
+  app.get("/ads.txt", (req, res) => {
+    res.set('Content-Type', 'text/plain');
+    res.send('# Ads.txt file for Mahech Internet Cafe\n# This website is for digital services only');
+  });
+
+  app.get("/humans.txt", (req, res) => {
+    res.set('Content-Type', 'text/plain');
+    res.send(`/* TEAM */
+Developer: Sumit Kumar
+Contact: sumit03497@gmail.com
+Location: Dang Kalan, Punjab, India
+
+/* SITE */
+Standards: HTML5, CSS3, JavaScript ES6+, React, Node.js
+Components: TypeScript, Tailwind CSS, Express.js
+Software: Vite, Drizzle ORM, PostgreSQL
+
+/* THANKS */
+All customers who trust our digital services
+Government of India for digital initiatives
+Open source community for amazing tools`);
+  });
+
   // SEO Routes
   // Generate XML sitemap
   app.get("/sitemap.xml", (req, res) => {

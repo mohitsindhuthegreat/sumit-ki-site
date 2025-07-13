@@ -35,6 +35,12 @@ ${pages.map(page => `  <url>
 }
 
 // Generate robots.txt
+// Serve Google Site Verification file
+export function serveGoogleVerification(req: Request, res: Response) {
+  res.set('Content-Type', 'text/html');
+  res.send('google-site-verification: googledbb31191f1908500.html');
+}
+
 export function generateRobots(req: Request, res: Response) {
   const baseUrl = `${req.protocol}://${req.get('host')}`;
   

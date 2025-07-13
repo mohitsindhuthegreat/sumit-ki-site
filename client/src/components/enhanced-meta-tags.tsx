@@ -26,6 +26,21 @@ export default function EnhancedMetaTags() {
       document.title = pageTitles[location] || siteName;
     };
 
+    // Add Google verification meta tag
+    const addGoogleVerification = () => {
+      // Remove existing verification meta tag
+      const existingMeta = document.querySelector('meta[name="google-site-verification"]');
+      if (existingMeta) {
+        existingMeta.remove();
+      }
+      
+      // Add Google site verification meta tag
+      const googleMeta = document.createElement('meta');
+      googleMeta.name = 'google-site-verification';
+      googleMeta.content = 'googledbb31191f1908500';
+      document.head.appendChild(googleMeta);
+    };
+
     // Add professional favicon and meta tags
     const updateFavicon = () => {
       // Remove existing favicon links
@@ -158,6 +173,7 @@ export default function EnhancedMetaTags() {
 
     // Update all meta elements
     updateTitle();
+    addGoogleVerification();
     updateFavicon();
     updateMetaDescription();
     addBreadcrumbSchema();
