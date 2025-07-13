@@ -5,11 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     
     <!-- Professional Favicon System -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" id="favicon-main" />
+    <link rel="shortcut icon" type="image/svg+xml" href="/favicon.ico" />
     <link rel="icon" sizes="16x16" href="/favicon.ico" />
     <link rel="icon" sizes="32x32" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico" />
     <link rel="manifest" href="/site.webmanifest" />
+    
+    <!-- Force favicon refresh -->
+    <script>
+      (function() {
+        const timestamp = Date.now();
+        const favicon = document.getElementById('favicon-main');
+        if (favicon) {
+          favicon.href = '/favicon.ico?' + timestamp;
+        }
+        
+        // Create additional favicon link for better browser support
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.type = 'image/svg+xml';
+        link.href = '/favicon.ico?' + timestamp;
+        document.head.appendChild(link);
+      })();
+    </script>
     
     <!-- Theme and App -->
     <meta name="theme-color" content="#1e40af" />

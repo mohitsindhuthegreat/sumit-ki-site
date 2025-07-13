@@ -80,41 +80,42 @@ Host: ${baseUrl}`;
 
 // Generate beautiful SVG favicon
 export function generateFavicon(req: Request, res: Response) {
+  // Create a simple, high-contrast SVG favicon that browsers will recognize
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
     <defs>
-      <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#1e40af"/>
-        <stop offset="50%" stop-color="#3b82f6"/>
-        <stop offset="100%" stop-color="#0891b2"/>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#1e40af"/>
+        <stop offset="100%" style="stop-color:#0891b2"/>
       </linearGradient>
-      <filter id="faviconShadow">
-        <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity="0.3"/>
-      </filter>
     </defs>
     
-    <!-- Main circle background -->
-    <circle cx="16" cy="16" r="15" fill="url(#faviconGradient)" filter="url(#faviconShadow)"/>
+    <!-- Background circle -->
+    <circle cx="16" cy="16" r="15" fill="url(#bg)" stroke="#fff" stroke-width="0.5"/>
     
-    <!-- Computer/Monitor symbol -->
-    <g transform="translate(16, 16)">
-      <rect x="-6" y="-3" width="12" height="7" rx="0.5" fill="white" opacity="0.95"/>
-      <rect x="-5" y="-2" width="10" height="5" fill="url(#faviconGradient)" opacity="0.8"/>
-      <rect x="-1.5" y="4" width="3" height="1.5" fill="white" opacity="0.95"/>
-      <rect x="-3" y="5.5" width="6" height="0.5" fill="white" opacity="0.95"/>
-      
-      <!-- WiFi waves -->
-      <path d="M -8 -6 Q -4 -9 0 -6" stroke="white" stroke-width="1" fill="none" opacity="0.8"/>
-      <path d="M 0 -6 Q 4 -9 8 -6" stroke="white" stroke-width="1" fill="none" opacity="0.8"/>
-      <path d="M -6 -5 Q -3 -7 0 -5" stroke="white" stroke-width="1" fill="none" opacity="0.9"/>
-      <path d="M 0 -5 Q 3 -7 6 -5" stroke="white" stroke-width="1" fill="none" opacity="0.9"/>
-      
-      <!-- Connection dot -->
-      <circle cx="0" cy="-6" r="1" fill="white"/>
-    </g>
+    <!-- Computer monitor -->
+    <rect x="7" y="10" width="18" height="12" rx="1" fill="white" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="8" y="11" width="16" height="9" fill="#1e40af"/>
+    
+    <!-- Monitor stand -->
+    <rect x="14" y="22" width="4" height="3" fill="white"/>
+    <rect x="11" y="25" width="10" height="1" fill="white"/>
+    
+    <!-- WiFi signal -->
+    <circle cx="24" cy="8" r="1" fill="white"/>
+    <path d="M 22 6 A 4 4 0 0 1 26 6" stroke="white" stroke-width="1" fill="none"/>
+    <path d="M 20 4 A 8 8 0 0 1 28 4" stroke="white" stroke-width="1" fill="none"/>
+    
+    <!-- Letter "M" for Mahech -->
+    <text x="16" y="18" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">M</text>
   </svg>`;
   
+  // Set proper headers for favicon
   res.setHeader('Content-Type', 'image/svg+xml');
-  res.setHeader('Cache-Control', 'public, max-age=31536000');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Last-Modified', new Date().toUTCString());
+  res.setHeader('ETag', `"favicon-${Date.now()}"`);
   res.send(svg);
 }
 

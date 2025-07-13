@@ -69,13 +69,32 @@ export default function EnhancedMetaTags() {
       manifest.href = '/site.webmanifest';
       document.head.appendChild(manifest);
       
-      // Force browser to refresh favicon
+      // Force browser to refresh favicon with multiple attempts
       setTimeout(() => {
-        const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-        link.type = 'image/svg+xml';
-        link.rel = 'shortcut icon';
-        link.href = `/favicon.ico?v=${timestamp}`;
-        document.getElementsByTagName('head')[0].appendChild(link);
+        // Method 1: Update existing favicon
+        const existingFavicon = document.querySelector("link[rel*='icon']");
+        if (existingFavicon) {
+          existingFavicon.href = `/favicon.ico?v=${timestamp}`;
+        }
+        
+        // Method 2: Add shortcut icon
+        const shortcutIcon = document.createElement('link');
+        shortcutIcon.rel = 'shortcut icon';
+        shortcutIcon.type = 'image/svg+xml';
+        shortcutIcon.href = `/favicon.ico?v=${timestamp}`;
+        document.head.appendChild(shortcutIcon);
+        
+        // Method 3: Force reload by changing href
+        setTimeout(() => {
+          const allIcons = document.querySelectorAll('link[rel*="icon"]');
+          allIcons.forEach(icon => {
+            const oldHref = icon.href;
+            icon.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="%23ff0000"/></svg>';
+            setTimeout(() => {
+              icon.href = oldHref;
+            }, 100);
+          });
+        }, 200);
       }, 100);
     };
 
