@@ -15,6 +15,8 @@ import {
   type SiteSetting,
   type InsertSiteSetting 
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, and, gt } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -384,4 +386,313 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  constructor() {
+    // Initialize database with default data if needed
+    this.initializeDatabase();
+  }
+
+  private async initializeDatabase() {
+    try {
+      // Check if admin user exists
+      const adminUser = await db.select().from(users).where(eq(users.username, "sumit")).limit(1);
+      
+      if (adminUser.length === 0) {
+        // Create admin user
+        await db.insert(users).values({
+          username: "sumit",
+          password: "1",
+          role: "admin",
+          isActive: true
+        });
+
+        // Create default site settings
+        await this.createDefaultSettings();
+        
+        // Create sample announcements
+        await this.createSampleAnnouncements();
+      }
+    } catch (error) {
+      console.error('Error initializing database:', error);
+    }
+  }
+
+  private async createDefaultSettings() {
+    const defaultSettings = [
+      {
+        key: "contact_phone",
+        value: "+91 9306003497",
+        description: "Primary contact phone number"
+      },
+      {
+        key: "contact_phone_alt",
+        value: "+91 9306003497",
+        description: "Alternative contact phone number"
+      },
+      {
+        key: "contact_whatsapp",
+        value: "+91 9306003497",
+        description: "WhatsApp contact number"
+      },
+      {
+        key: "contact_email",
+        value: "sumit03497@gmail.com",
+        description: "Primary contact email"
+      },
+      {
+        key: "contact_email_support",
+        value: "sumit03497@gmail.com",
+        description: "Support email address"
+      },
+      {
+        key: "contact_address",
+        value: "VPO DANG KALAN NEAR BAWEJA MART",
+        description: "Business address"
+      },
+      {
+        key: "contact_address_hindi",
+        value: "वीपीओ डांग कलां बावेजा मार्ट के पास",
+        description: "Business address in Hindi"
+      },
+      {
+        key: "business_hours",
+        value: "Monday - Sunday: 8:00 AM - 11:00 PM",
+        description: "Business operating hours"
+      },
+      {
+        key: "business_hours_hindi",
+        value: "सोमवार - रविवार: सुबह 8:00 - रात 11:00",
+        description: "Business operating hours in Hindi"
+      },
+      {
+        key: "site_title",
+        value: "Sumit Internet Cafe",
+        description: "Website title"
+      },
+      {
+        key: "site_title_hindi",
+        value: "सुमित इंटरनेट कैफे",
+        description: "Website title in Hindi"
+      },
+      {
+        key: "site_description",
+        value: "Complete digital solution hub for government services, banking, and more",
+        description: "Website description"
+      },
+      {
+        key: "site_description_hindi",
+        value: "सरकारी सेवाओं, बैंकिंग और अधिक के लिए संपूर्ण डिजिटल समाधान केंद्र",
+        description: "Website description in Hindi"
+      }
+    ];
+
+    await db.insert(siteSettings).values(defaultSettings);
+  }
+
+  private async createSampleAnnouncements() {
+    const sampleAnnouncements = [
+      {
+        title: "Latest Railway Job Notifications 2025",
+        titleHindi: "नवीनतम रेलवे नौकरी अधिसूचनाएं 2025",
+        content: "New railway job openings for various positions including ALP, Group D, Technician, and Officer posts. Apply now for government jobs with good salary packages and job security.",
+        contentHindi: "ALP, ग्रुप D, तकनीशियन और अधिकारी पदों सहित विभिन्न पदों के लिए नई रेलवे नौकरी के अवसर। अच्छे वेतन पैकेज और नौकरी की सुरक्षा के साथ सरकारी नौकरी के लिए आवेदन करें।",
+        category: "vacancy",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://rrc.indianrailways.gov.in/",
+        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+      {
+        title: "SSC CGL 2025 Application Form Available",
+        titleHindi: "SSC CGL 2025 आवेदन फॉर्म उपलब्ध",
+        content: "SSC Combined Graduate Level (CGL) 2025 application form is now available online. Apply for various central government posts with competitive salary packages.",
+        contentHindi: "SSC संयुक्त स्नातक स्तर (CGL) 2025 आवेदन फॉर्म अब ऑनलाइन उपलब्ध है। प्रतिस्पर्धी वेतन पैकेज के साथ विभिन्न केंद्रीय सरकारी पदों के लिए आवेदन करें।",
+        category: "form",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://ssc.nic.in/Portal/Apply",
+        expiryDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+      },
+      {
+        title: "Bank PO Recruitment 2025 - Multiple Banks",
+        titleHindi: "बैंक पीओ भर्ती 2025 - कई बैंक",
+        content: "Various public sector banks are recruiting for Probationary Officer (PO) positions. Great opportunity for graduates to start their banking career with excellent growth prospects.",
+        contentHindi: "विभिन्न सार्वजनिक क्षेत्र के बैंक प्रोबेशनरी ऑफिसर (PO) पदों के लिए भर्ती कर रहे हैं। स्नातकों के लिए बेहतरीन विकास संभावनाओं के साथ बैंकिंग करियर शुरू करने का शानदार अवसर।",
+        category: "vacancy",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://ibps.in/",
+        expiryDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+      },
+      {
+        title: "UPSC Civil Services Prelims 2025 Notification",
+        titleHindi: "UPSC सिविल सेवा प्रारंभिक 2025 अधिसूचना",
+        content: "UPSC has released the notification for Civil Services Preliminary Examination 2025. This is the most prestigious examination for administrative services in India.",
+        contentHindi: "UPSC ने सिविल सेवा प्रारंभिक परीक्षा 2025 की अधिसूचना जारी की है। यह भारत में प्रशासनिक सेवाओं के लिए सबसे प्रतिष्ठित परीक्षा है।",
+        category: "form",
+        priority: "high",
+        isActive: true,
+        applyLink: "https://upsc.gov.in/",
+        expiryDate: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000),
+      },
+      {
+        title: "State Government Teacher Recruitment 2025",
+        titleHindi: "राज्य सरकार शिक्षक भर्ती 2025",
+        content: "Various state governments are recruiting for teaching positions from primary to secondary level. Good opportunity for B.Ed graduates to serve in education sector.",
+        contentHindi: "विभिन्न राज्य सरकारें प्राथमिक से माध्यमिक स्तर तक शिक्षक पदों के लिए भर्ती कर रही हैं। B.Ed स्नातकों के लिए शिक्षा क्षेत्र में सेवा करने का अच्छा अवसर।",
+        category: "vacancy",
+        priority: "normal",
+        isActive: true,
+        applyLink: "https://www.sarkariresult.com/",
+        expiryDate: new Date(Date.now() + 40 * 24 * 60 * 60 * 1000),
+      },
+      {
+        title: "Digital India Services Now Available",
+        titleHindi: "डिजिटल इंडिया सेवाएं अब उपलब्ध",
+        content: "We now provide comprehensive Digital India services including e-governance applications, digital certificates, and online government form submissions with expert assistance.",
+        contentHindi: "हम अब व्यापक डिजिटल इंडिया सेवाएं प्रदान करते हैं जिसमें ई-गवर्नेंस एप्लिकेशन, डिजिटल प्रमाणपत्र और विशेषज्ञ सहायता के साथ ऑनलाइन सरकारी फॉर्म सबमिशन शामिल है।",
+        category: "update",
+        priority: "normal",
+        isActive: true,
+        expiryDate: null,
+      }
+    ];
+
+    await db.insert(announcements).values(sampleAnnouncements);
+  }
+
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async createContactMessage(insertMessage: InsertContactMessage): Promise<ContactMessage> {
+    const [message] = await db
+      .insert(contactMessages)
+      .values(insertMessage)
+      .returning();
+    return message;
+  }
+
+  async getContactMessages(): Promise<ContactMessage[]> {
+    return await db
+      .select()
+      .from(contactMessages)
+      .orderBy(desc(contactMessages.createdAt));
+  }
+
+  async createServiceRequest(insertRequest: InsertServiceRequest): Promise<ServiceRequest> {
+    const [request] = await db
+      .insert(serviceRequests)
+      .values(insertRequest)
+      .returning();
+    return request;
+  }
+
+  async getServiceRequests(): Promise<ServiceRequest[]> {
+    return await db
+      .select()
+      .from(serviceRequests)
+      .orderBy(desc(serviceRequests.createdAt));
+  }
+
+  async updateServiceRequestStatus(id: number, status: string): Promise<ServiceRequest | undefined> {
+    const [request] = await db
+      .update(serviceRequests)
+      .set({ status })
+      .where(eq(serviceRequests.id, id))
+      .returning();
+    return request || undefined;
+  }
+
+  // Admin functionality
+  async createAnnouncement(insertAnnouncement: InsertAnnouncement): Promise<Announcement> {
+    const [announcement] = await db
+      .insert(announcements)
+      .values(insertAnnouncement)
+      .returning();
+    return announcement;
+  }
+
+  async getAnnouncements(): Promise<Announcement[]> {
+    return await db
+      .select()
+      .from(announcements)
+      .orderBy(desc(announcements.createdAt));
+  }
+
+  async getActiveAnnouncements(): Promise<Announcement[]> {
+    const now = new Date();
+    return await db
+      .select()
+      .from(announcements)
+      .where(
+        and(
+          eq(announcements.isActive, true),
+          // Either no expiry date or expiry date is in the future
+          // Note: We need to handle null expiry dates properly
+        )
+      )
+      .orderBy(desc(announcements.createdAt));
+  }
+
+  async updateAnnouncement(id: number, updateData: Partial<InsertAnnouncement>): Promise<Announcement | undefined> {
+    const [announcement] = await db
+      .update(announcements)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(announcements.id, id))
+      .returning();
+    return announcement || undefined;
+  }
+
+  async deleteAnnouncement(id: number): Promise<boolean> {
+    const result = await db
+      .delete(announcements)
+      .where(eq(announcements.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  // Site settings
+  async getSiteSetting(key: string): Promise<SiteSetting | undefined> {
+    const [setting] = await db
+      .select()
+      .from(siteSettings)
+      .where(eq(siteSettings.key, key));
+    return setting || undefined;
+  }
+
+  async setSiteSetting(insertSetting: InsertSiteSetting): Promise<SiteSetting> {
+    const [setting] = await db
+      .insert(siteSettings)
+      .values(insertSetting)
+      .onConflictDoUpdate({
+        target: siteSettings.key,
+        set: {
+          value: insertSetting.value,
+          description: insertSetting.description,
+          updatedAt: new Date()
+        }
+      })
+      .returning();
+    return setting;
+  }
+
+  async getAllSiteSettings(): Promise<SiteSetting[]> {
+    return await db.select().from(siteSettings);
+  }
+}
+
+export const storage = new DatabaseStorage();

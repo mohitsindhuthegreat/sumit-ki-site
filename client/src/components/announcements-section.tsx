@@ -24,8 +24,13 @@ export default function AnnouncementsSection() {
     queryKey: ["/api/announcements"],
   });
 
-  // Show only the latest 3 announcements
-  const latestAnnouncements = announcements.slice(0, 3);
+  // Filter and show the latest vacancy and form announcements
+  const vacancyAnnouncements = announcements.filter(a => a.category === "vacancy").slice(0, 2);
+  const formAnnouncements = announcements.filter(a => a.category === "form").slice(0, 2);
+  const otherAnnouncements = announcements.filter(a => !["vacancy", "form"].includes(a.category)).slice(0, 2);
+  
+  // Combine and show only the latest 6 announcements with priority to vacancy and forms
+  const latestAnnouncements = [...vacancyAnnouncements, ...formAnnouncements, ...otherAnnouncements].slice(0, 6);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -105,13 +110,13 @@ export default function AnnouncementsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            Latest Updates & Announcements
+            Latest Vacancies & Forms
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Stay informed with the latest government jobs, form updates, and important notifications
+            Automatically updated with the latest government job notifications and application forms
             <br />
             <span className="text-brand-blue font-medium">
-              नवीनतम सरकारी नौकरी, फॉर्म अपडेट और महत्वपूर्ण सूचनाओं के साथ अपडेट रहें
+              स्वचालित रूप से नवीनतम सरकारी नौकरी अधिसूचना और आवेदन फॉर्म के साथ अपडेट
             </span>
           </p>
         </div>

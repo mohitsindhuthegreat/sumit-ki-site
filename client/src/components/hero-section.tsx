@@ -26,6 +26,8 @@ export default function HeroSection() {
         <p className="text-xl md:text-2xl mb-8 text-gray-200">
           Government services, banking, printing, travel booking & all digital solutions
           <br />
+          <span className="text-lg font-semibold text-brand-cyan">Auto-updated with Latest Vacancies & Forms</span>
+          <br />
           <span className="text-lg">सरकारी सेवाएं, बैंकिंग, प्रिंटिंग, यात्रा बुकिंग और सभी डिजिटल समाधान</span>
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
