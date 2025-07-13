@@ -32,18 +32,35 @@ export default function EnhancedMetaTags() {
       const existingLinks = document.querySelectorAll('link[rel*="icon"]');
       existingLinks.forEach(link => link.remove());
       
-      // Add new beautiful favicon
+      // Add new beautiful favicon - force refresh with timestamp
+      const timestamp = Date.now();
       const faviconLink = document.createElement('link');
       faviconLink.rel = 'icon';
       faviconLink.type = 'image/svg+xml';
-      faviconLink.href = '/favicon.ico';
+      faviconLink.href = `/favicon.ico?v=${timestamp}`;
       document.head.appendChild(faviconLink);
+      
+      // Add 16x16 favicon for better browser support
+      const favicon16 = document.createElement('link');
+      favicon16.rel = 'icon';
+      favicon16.type = 'image/svg+xml';
+      favicon16.sizes = '16x16';
+      favicon16.href = `/favicon.ico?v=${timestamp}`;
+      document.head.appendChild(favicon16);
+      
+      // Add 32x32 favicon
+      const favicon32 = document.createElement('link');
+      favicon32.rel = 'icon';
+      favicon32.type = 'image/svg+xml';
+      favicon32.sizes = '32x32';
+      favicon32.href = `/favicon.ico?v=${timestamp}`;
+      document.head.appendChild(favicon32);
       
       // Add Apple touch icon
       const appleIcon = document.createElement('link');
       appleIcon.rel = 'apple-touch-icon';
       appleIcon.sizes = '180x180';
-      appleIcon.href = '/favicon.ico';
+      appleIcon.href = `/favicon.ico?v=${timestamp}`;
       document.head.appendChild(appleIcon);
       
       // Add manifest
@@ -51,6 +68,15 @@ export default function EnhancedMetaTags() {
       manifest.rel = 'manifest';
       manifest.href = '/site.webmanifest';
       document.head.appendChild(manifest);
+      
+      // Force browser to refresh favicon
+      setTimeout(() => {
+        const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+        link.type = 'image/svg+xml';
+        link.rel = 'shortcut icon';
+        link.href = `/favicon.ico?v=${timestamp}`;
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }, 100);
     };
 
     // Add professional meta description based on page
