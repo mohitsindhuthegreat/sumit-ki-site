@@ -22,11 +22,15 @@ async function getLatestGovernmentJobs(): Promise<any[]> {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama3-70b-8192',
+        model: 'llama-3.3-70b-versatile',
         messages: [
           {
             role: 'system',
-            content: `You are an expert government job research assistant. Generate realistic and current Indian government job notifications and form deadlines for ${currentDate}. 
+            content: `Current Date: ${currentDate} (Year: ${new Date().getFullYear()})
+
+You are an expert government job research assistant. Generate realistic and current Indian government job notifications and form deadlines for ${currentDate} in the year ${new Date().getFullYear()}. 
+
+🚨 CRITICAL: All content must be relevant to the year ${new Date().getFullYear()}. Use current year in job titles, forms, and deadlines.
 
 IMPORTANT: Return ONLY a valid JSON array of objects, no other text. Each object should have this exact structure:
 {
@@ -44,12 +48,14 @@ Focus on: SSC, Railway, Banking, UPSC, State Government, Teaching, Police, and o
           },
           {
             role: 'user',
-            content: `Generate 6 fresh government job/form notifications for date ${currentDate}. Include mix of:
-- 2 urgent forms (7-15 days remaining)
-- 2 job vacancies (15-30 days remaining) 
-- 2 regular updates (30-45 days remaining)
+            content: `Generate 6 fresh government job/form notifications for date ${currentDate} in year ${new Date().getFullYear()}. Include mix of:
+- 2 urgent forms (7-15 days remaining) - use ${new Date().getFullYear()} in titles
+- 2 job vacancies (15-30 days remaining) - use ${new Date().getFullYear()} in recruitment cycles
+- 2 regular updates (30-45 days remaining) - use ${new Date().getFullYear()} in notification years
 
-Focus on popular categories like SSC CGL, Railway RRB, Banking IBPS, UPSC, State PSC, Teaching, and Police recruitment.`
+Focus on popular categories like SSC CGL ${new Date().getFullYear()}, Railway RRB ${new Date().getFullYear()}, Banking IBPS ${new Date().getFullYear()}, UPSC ${new Date().getFullYear()}, State PSC ${new Date().getFullYear()}, Teaching, and Police recruitment.
+
+REMEMBER: All jobs must be for year ${new Date().getFullYear()}, not 2023 or any previous year.`
           }
         ],
         max_tokens: 2000,
@@ -126,11 +132,20 @@ async function getChatResponse(userMessage: string): Promise<string> {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama3-70b-8192',
+        model: 'llama-3.3-70b-versatile',
         messages: [
           {
             role: 'system',
-            content: `You are MAHECH ASSISTANT, an expert AI consultant for ${currentContactInfo.businessName || 'Mahech Internet Cafe'} - India's premier digital service center. You are highly knowledgeable, professional, and provide comprehensive assistance in both Hindi and English with perfect bilingual fluency.
+            content: `Current Date and Year: ${new Date().toLocaleDateString('en-IN', { 
+              day: 'numeric', 
+              month: 'long', 
+              year: 'numeric',
+              weekday: 'long'
+            })} (Year: ${new Date().getFullYear()})
+
+You are MAHECH ASSISTANT, an expert AI consultant for ${currentContactInfo.businessName || 'Mahech Internet Cafe'} - India's premier digital service center. You are highly knowledgeable, professional, and provide comprehensive assistance in both Hindi and English with perfect bilingual fluency.
+
+🚨 IMPORTANT: Today's date is ${new Date().toLocaleDateString('en-IN')} and we are in the year ${new Date().getFullYear()}. Always use current year ${new Date().getFullYear()} in all responses and calculations.
 
 🎯 CORE EXPERTISE:
 You are an expert in Indian government procedures, banking systems, digital services, and online applications. You help users navigate complex bureaucratic processes with ease.
@@ -227,14 +242,16 @@ You are an expert in Indian government procedures, banking systems, digital serv
 - Provide alternatives when primary service isn't available
 - Always offer phone/WhatsApp contact for urgent matters
 
-🏆 EXPERT KNOWLEDGE AREAS:
-- Latest government schemes and eligibility criteria
-- Document requirements for all services
-- Online portal navigation (DigiLocker, Umang, etc.)
-- Banking regulations and KYC requirements
-- Examination calendars and important deadlines
-- Travel booking tips and best practices
-- Digital service troubleshooting
+🏆 EXPERT KNOWLEDGE AREAS (Updated for ${new Date().getFullYear()}):
+- Latest government schemes and eligibility criteria for ${new Date().getFullYear()}
+- Document requirements for all services (${new Date().getFullYear()} updates)
+- Online portal navigation (DigiLocker, Umang, EPFO, Income Tax Portal - ${new Date().getFullYear()} versions)
+- Banking regulations and KYC requirements (${new Date().getFullYear()} compliance)
+- Examination calendars and important deadlines for ${new Date().getFullYear()}
+- Travel booking tips and best practices (${new Date().getFullYear()} rates and policies)
+- Digital service troubleshooting (latest ${new Date().getFullYear()} technologies)
+- Government job calendars and recruitment cycles for ${new Date().getFullYear()}
+- Latest policy updates and scheme modifications in ${new Date().getFullYear()}
 
 🌟 PERSONALITY:
 - Professional yet friendly and approachable
@@ -266,7 +283,7 @@ Remember: You represent Mahech Internet Cafe's commitment to excellence. Every i
     return data.choices[0]?.message?.content || "माफ करें, मुझे समझने में कुछ समस्या हो रही है। कृपया अपना प्रश्न दोबारा पूछें।";
   } catch (error) {
     console.error('Groq API error:', error);
-    return "माफ करें, मुझे तकनीकी समस्या हो रही है। कृपया हमसे +91 9306003497 पर संपर्क करें। Sorry, I'm having technical issues. Please contact us at +91 9306003497.";
+    return `माफ करें, मुझे तकनीकी समस्या हो रही है। आज की तारीख ${new Date().toLocaleDateString('hi-IN')} है और साल ${new Date().getFullYear()} चल रहा है। कृपया हमसे ${currentContactInfo.phone || '+91 9306003497'} पर संपर्क करें। Sorry, I'm having technical issues. Today's date is ${new Date().toLocaleDateString('en-IN')} and we're in year ${new Date().getFullYear()}. Please contact us at ${currentContactInfo.phone || '+91 9306003497'}.`;
   }
 }
 
